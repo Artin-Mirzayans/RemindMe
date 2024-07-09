@@ -17,37 +17,21 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: List root directory contents
-        run: ls -la
-
       - name: Change to client directory
         run: |
           cd client
           echo "Changed directory to $(pwd)"
-          ls -la
 
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
           node-version: '20.15.1'
 
-      - name: Log Node.js version
-        run: node -v
-
-      - name: Log npm version
-        run: npm -v
-
       - name: Install dependencies
         run: |
           cd client
           echo "Installing dependencies in $(pwd)"
           npm install
-
-      - name: List client directory contents after npm install
-        run: |
-          cd client
-          ls -la node_modules
-          ls -la
 
       - name: Run ESLint
         run: |
