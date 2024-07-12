@@ -59,13 +59,13 @@ jobs:
       - name: Setup SSH
         run: |
           mkdir -p ~/.ssh
-          echo "${{ secrets.AWS_EC2_SSH_PRIVATE_KEY }}" > ~/.ssh/remindme.pem
-          chmod 600 ~/.ssh/remindme.pem
-          ssh-keyscan -t rsa ec2-54-151-20-245.us-west-1.compute.amazonaws.com >> ~/.ssh/known_hosts
+          echo "${{ secrets.AWS_EC2_SSH_PRIVATE_KEY }}" > ~/.ssh/id_rsa
+          eval $(ssh-agent -s)
+          ssh-add ~/.ssh/id_rsa
+          ssh-keyscan -H rsa ec2-54-151-20-245.us-west-1.compute.amazonaws.com >> ~/.ssh/known_hosts
 
       - name: SSH into EC2 Instance
-        run: |
-          ssh -i ~/.ssh/remindme.pem ubuntu@ec2-54-151-20-245.us-west-1.compute.amazonaws.com '/home/ubuntu/.deploy.sh'
+        run: ssh -o StrictHostKeyChecking=no ubuntu@ec2-54-151-20-245.us-west-1.compute.amazonaws.com '/home/ubuntu/.deploy.sh'
         
       - name: Whitelist runner IP address
         run: |
