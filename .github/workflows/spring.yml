@@ -61,14 +61,21 @@ jobs:
         with: 
           ssh-private-key: ${{ secrets.AWS_EC2_SSH_PRIVATE_KEY }}
 
-      - name: SSH into EC2 and deploy
-        run: |
-          ssh ubuntu@ec2-54-151-20-245.us-west-1.compute.amazonaws.com "/home/ubuntu/deploy.sh"
- 
-        
       - name: Whitelist runner IP address
         run: |
           aws ec2 authorize-security-group-ingress \
+            --group-id $AWS_INSTANCE_SG_ID \
+            --protocol tcp \
+            --port 22 \
+            --cidr ${{ steps.ip.outputs.ipv4 }}/32    
+
+      - name: SSH into EC2 and deploy
+        run: |
+          ssh ubuntu@ec2-54-151-20-245.us-west-1.compute.amazonaws.com "/home/ubuntu/deploy.sh"
+
+      - name: revoke runner ip address
+        run: |
+          aws ec2 revoke-security-group-ingress \
             --group-id $AWS_INSTANCE_SG_ID \
             --protocol tcp \
             --port 22 \
