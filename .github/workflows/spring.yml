@@ -61,6 +61,9 @@ jobs:
         with: 
           ssh-private-key: ${{ secrets.AWS_EC2_SSH_PRIVATE_KEY }}
 
+      - name: Add host key to known_hosts
+        run: echo "${{ secrets.AWS_EC2_SSH_HOST_KEY }}" >> ~/.ssh/known_hosts
+      
       - name: Whitelist runner IP address
         run: |
           aws ec2 authorize-security-group-ingress \
@@ -74,13 +77,13 @@ jobs:
           ssh ubuntu@ec2-54-151-20-245.us-west-1.compute.amazonaws.com "/home/ubuntu/deploy.sh"
 
       - name: Revoke runner IP address
+        if: always()
         run: |
           aws ec2 revoke-security-group-ingress \
             --group-id ${{ secrets.AWS_INSTANCE_SG_ID }} \
             --protocol tcp \
             --port 22 \
             --cidr ${{ steps.ip.outputs.ipv4 }}/32
-        continue-on-error: true
 
       
         
