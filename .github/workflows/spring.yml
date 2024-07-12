@@ -57,7 +57,7 @@ jobs:
         uses: haythem/public-ip@v1.2
 
       - name: Setup SSH
-      - uses: webfactory/ssh-agent@v0.9.0
+        uses: webfactory/ssh-agent@v0.9.0
         with: 
           ssh-private-key: ${{ secrets.AWS_EC2_SSH_PRIVATE_KEY }}
 
