@@ -1,0 +1,37 @@
+.reminder-add-button {
+    display: flex;
+    justify-content: center;
+    padding-top: 1.4rem;
+    button {
+        font-family: 'Noto Sans', sans-serif;
+        cursor: pointer;
+        box-shadow: -1px 3px 3px 0 rgba(80, 80, 80, .2);
+        width: 170px;
+        line-height: 1.3rem;
+        padding: 1rem;
+        border: none;
+        border-radius: 30px;
+        background: #658352;
+        color: #fff;
+        font-weight: bold;
+        flex: 0 0 auto;
+        transition: all 0.18s ease-in;
+    }
+
+    @media (max-width: 1070px) {
+        button {
+            width: 140px;
+        }
+    }
+
+    @media (max-width: 500px) {
+        button {
+            width: 115px;
+        }
+    }
+
+    button:hover {
+        background: #0f1a08;
+        box-shadow: 0 0 0 1px rgba(80, 80, 80, .5);
+      }
+}

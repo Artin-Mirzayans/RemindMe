@@ -1,0 +1,89 @@
+.reminder-add-modal-title {
+    font-size: 2.4rem;
+    font-weight: 800;
+    color: #658352;
+    margin-top: -3rem;
+}
+
+.reminder-add-modal-contact {
+    display: flex;
+    gap: 1.5rem;
+
+    .reminder-add-modal-contact-method {
+        display: flex;
+        flex-direction: column-reverse;
+        gap: .4rem;
+    }
+
+    .reminder-add-modal-contact-icon {
+        font-size: 4rem;
+        color: #658352;
+    }
+
+    input {
+        transform: scale(1.7);
+        accent-color: black;
+    }
+
+}
+
+.SMS-disabled-note {
+    color: red;
+    font-weight: 600;
+    font-size: 1.5rem;
+    text-align: center;
+    
+}
+
+.reminder-add-modal-input {
+    padding: 1rem;
+    text-align: center;
+    font-size: 1.6rem;
+    border-radius: 6px;
+    border-color: #658352;
+}
+
+.reminder-add-modal-buttons {
+    display: flex;
+    gap: 1.2rem;
+    button {
+        font-family: 'Noto Sans', sans-serif;
+        cursor: pointer;
+        box-shadow: -1px 3px 3px 0 rgba(80, 80, 80, .2);
+        width: 115px;
+        line-height: 1rem;
+        padding: .7rem;
+        border: none;
+        border-radius: 2rem;
+        background: #658352;
+        color: #fff;
+        font-weight: bold;
+        flex: 0 0 auto;
+        transition: all 0.18s ease-in;
+    }
+
+    @media (max-width: 1070px) {
+        button {
+            width: 100px;
+        }
+    }
+
+    @media (max-width: 500px) {
+        button {
+            width: 86px;
+        }
+    }
+
+
+    button:hover {
+        background: #0f1a08;
+        box-shadow: 0 0 0 1px rgba(80, 80, 80, .5);
+      }
+}
+
+
+@media (max-width: 300px) {
+   .reminder-add-modal {
+       font-size: 9px;
+   }
+}

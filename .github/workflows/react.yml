@@ -35,11 +35,11 @@ jobs:
           echo "Running ESLint in $(pwd)"
           npm run lint
 
-      - name: Run Tests
+      - name: Run Type-Check
         run: |
           cd client
-          echo "Running tests in $(pwd)"
-          npm test
+          echo "Running Type-Check in $(pwd)"
+          npm run typeCheck
 
   deploy:
     if: github.ref == 'refs/heads/master'

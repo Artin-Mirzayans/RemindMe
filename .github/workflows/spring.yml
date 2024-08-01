@@ -43,14 +43,14 @@ jobs:
 
     env:
       AWS_INSTANCE_SG_ID: ${{ secrets.AWS_INSTANCE_SG_ID }}
-      
+
     steps:
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v1
         with:
-            aws-access-key-id: ${{ secrets.AWS_EC2_ACCESS_KEY_ID }}
-            aws-secret-access-key: ${{ secrets.AWS_EC2_SECRET_ACCESS_KEY }}
-            aws-region: us-west-1    
+          aws-access-key-id: ${{ secrets.AWS_EC2_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_EC2_SECRET_ACCESS_KEY }}
+          aws-region: us-west-1
 
       - name: Get runner IP address
         id: ip
@@ -58,16 +58,16 @@ jobs:
 
       - name: Setup SSH
         uses: webfactory/ssh-agent@v0.9.0
-        with: 
+        with:
           ssh-private-key: ${{ secrets.AWS_EC2_SSH_PRIVATE_KEY }}
-      
+
       - name: Whitelist runner IP address
         run: |
           aws ec2 authorize-security-group-ingress \
             --group-id $AWS_INSTANCE_SG_ID \
             --protocol tcp \
             --port 22 \
-            --cidr ${{ steps.ip.outputs.ipv4 }}/32    
+            --cidr ${{ steps.ip.outputs.ipv4 }}/32
 
       - name: SSH into EC2 & Deploy
         run: |
@@ -81,6 +81,3 @@ jobs:
             --protocol tcp \
             --port 22 \
             --cidr ${{ steps.ip.outputs.ipv4 }}/32
-
-      
-        

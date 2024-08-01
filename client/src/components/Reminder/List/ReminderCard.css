@@ -1,0 +1,31 @@
+.reminder-card {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 1.7rem;
+
+    .reminder-card-description {
+        flex-basis: 40%;
+    }
+
+    .reminder-card-date {
+        flex-basis: 20%
+    }
+
+    .reminder-card-time {
+        flex-basis: 25%;
+        white-space: nowrap;
+    }
+
+    .reminder-card-contact {
+        display: flex;
+        justify-content: center;
+        flex-basis: 10%;
+    }
+
+    .reminder-card-cancel {
+        display: flex;
+        justify-content: center;
+        cursor: pointer;
+    }
+}

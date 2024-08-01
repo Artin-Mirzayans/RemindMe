@@ -1,0 +1,30 @@
+html ,body, .root {
+    height: 100vh;
+}
+
+
+html {
+    background-color: #fbf9ef
+}
+
+body {
+    font-family: Garamond, serif;
+}
+
+@media (max-width: 1070px) {
+    html, body {
+        font-size: 12px;
+    }
+}
+
+@media (max-width: 500px) {
+    html, body {
+        font-size: 12px;
+    }
+}
+
+@media (max-width: 375px) {
+    html, body {
+        font-size: 10px;
+    }
+}
