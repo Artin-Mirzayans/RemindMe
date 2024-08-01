@@ -1,0 +1,51 @@
+.content {
+    display: flex;
+    justify-content: center;
+    width: 50%;
+    margin: 5rem auto 2rem;
+    min-height: 600px;
+    border-radius: 2rem;
+    border: .3rem solid #658352;
+    overflow: hidden;
+    
+    .content-title {
+        padding-top: 1rem;
+        font-size: 4rem;
+        color: #658352;
+    }
+}
+
+.content.dimmed {
+    opacity: .18;
+}
+
+
+@media (max-height: 650px) {
+    .content {
+        margin: 1rem auto 2rem;
+    }
+}
+
+@media (max-width: 850px) {
+    .content {
+        width: 65%;
+    }
+}
+
+@media (max-width: 600px) {
+    .content {
+        width: 85%;
+    }
+}
+
+@media (max-width: 480px) {
+    .content {
+        width: 92%;
+    }
+}
+
+@media (max-width: 380px) {
+    .content {
+        width: 96%;
+    }
+}

@@ -1,10 +1,15 @@
+import React from 'react';
+
+import AppRouter from './components/AppRouter';
+import { PageSizeProvider } from './components/PageSizeContext';
+
 import './App.css';
 
 function App() {
   return (
-    <div className="App">
-      RemindMe
-    </div>
+    <PageSizeProvider>
+      <AppRouter />
+    </PageSizeProvider>
   );
 }
 

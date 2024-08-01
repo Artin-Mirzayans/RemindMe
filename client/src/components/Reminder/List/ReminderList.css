@@ -1,0 +1,34 @@
+.reminder-list {
+    display: flex;
+    flex-direction: column;
+    flex-grow: 1;
+    gap: 1rem;
+    padding-top: 1.8rem;
+    font-size: 1.6rem;
+
+
+    .reminder-list-empty {
+        font-size: 2rem;
+    }
+}
+
+
+@media (max-height: 700px) {
+    .reminder-list {
+        padding-top: 4rem;
+        gap : 2.2rem;
+    }
+ }
+
+ @media (max-height: 900px) {
+    .reminder-list {
+        padding-top: 2rem;
+        gap : 1.6rem;
+    }
+ }
+
+ @media (max-width: 300px) {
+    .reminder-list {
+        font-size: 1.2rem
+    }
+ }

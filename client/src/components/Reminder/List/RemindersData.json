@@ -1,0 +1,27 @@
+[
+  {
+    "contactMethod": "Email",
+    "description": "Team mtg 10 AM",
+    "utcDateTimeString": "2024-08-01T10:00:00Z"
+  },
+  {
+    "contactMethod": "Text",
+    "description": "Dentist 2 PM",
+    "utcDateTimeString": "2024-08-01T14:00:00Z"
+  },
+  {
+    "contactMethod": "Text",
+    "description": "real madrid city",
+    "utcDateTimeString": "2024-08-01T13:30:00Z"
+  },
+  {
+    "contactMethod": "Text",
+    "description": "USA basketball",
+    "utcDateTimeString": "2024-08-04T21:00:00Z"
+  },
+  {
+    "contactMethod": "Text",
+    "description": "order shoes",
+    "utcDateTimeString": "2024-08-02T19:00:00Z"
+  }
+]

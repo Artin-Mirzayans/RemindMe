@@ -1,0 +1,11 @@
+{
+  "include": ["src/**/*", "tests/**/*", "declaration.d.ts"],
+  "exclude": ["node_modules", "dist"],
+  "compilerOptions": {
+    "esModuleInterop": true,
+    "skipLibCheck": true,
+    "jsx": "react",
+    "resolveJsonModule": true,
+    "types": []
+  }
+}

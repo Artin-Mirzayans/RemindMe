@@ -1,0 +1,143 @@
+.nav {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    padding: 3rem 10rem;
+    border-bottom: #658352 1.2px solid;
+    font-family: 'Acme';
+
+    .nav-info {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        gap: 3rem;
+
+        .nav-link {
+            display: flex;
+            /* justify-content: center;
+            align-items: center; */
+            color: black;
+            font-size: 1.8rem;
+            text-decoration: none;
+            cursor: pointer;
+            transition: color 0.3s ease;
+          }
+
+          @media (max-width: 1450px) {
+            .nav-link  {
+                font-size: 1.6rem;
+            }
+        }
+          
+          .nav-link:hover {
+            color: #658352;
+          }
+    }
+
+    .nav-user {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        margin-left: auto;
+        gap: 2rem;
+
+        .nav-name {
+            display: none;
+            font-size: 2rem;
+            font-weight: 520;
+        }
+
+        @media (min-width: 1350px) {
+            .nav-name {
+              display: block;
+            }
+        }
+    }
+
+    button {
+        font-family: 'Noto Sans', sans-serif;
+        cursor: pointer;
+        width: 100px;
+        line-height: 1rem;
+        padding: 1rem;
+        border: none;
+        border-radius: 2.2rem;
+        background: #658352;
+        color: #fff;
+        font-weight: bold;
+        box-shadow: -1px 3px 3px 0 rgba(80, 80, 80, .2);
+        flex: 0 0 auto;
+        transition: all 0.18s ease-in;
+    }
+
+    button:hover {
+        background: #0f1a08;
+        box-shadow: 0 0 0 1px rgba(80, 80, 80, .5);
+      }
+      
+    span {
+        font-size: 1.2rem;
+    }
+}
+
+
+.mobile-nav {
+    display: flex;
+    align-items: center;
+    padding: 4rem;
+    border-bottom: #658352 1.2px solid;
+
+    .logo {
+        margin-left: auto;
+    }
+
+    .sliding-menu {
+        position: absolute;
+        left: -260px;
+        width: 250px;
+        height: 80%;
+        background-color: #fbf9ef;
+        box-shadow: 2px 0 5px rgba(0, 0, 0, 0.5);
+        transition: left 0.3s ease;
+        z-index: 1000;
+
+        .sliding-menu-content {
+          display: flex;
+          flex-direction: column;
+          padding: 2rem;
+
+          .mobile-nav-link {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 1rem;
+            padding: 1rem;
+            border-bottom: 1px solid black;
+            text-decoration: none;
+
+            .mobile-nav-desc {
+              font-size: 1.8rem;
+              font-weight: 525;
+              color: black;
+            }
+
+            .mobile-nav-icon {
+              color: #658352;
+            }
+
+          }
+        }
+      }
+
+      .sliding-menu.open {
+        left: 0;
+      }
+
+      @media (max-width: 250px) {
+        .sliding-menu  {
+          left: -260px;
+          width: 100%;
+        }
+      }
+    
+}
