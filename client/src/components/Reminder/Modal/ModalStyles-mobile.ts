@@ -1,16 +1,20 @@
 const ModalStylesMobile = (width) => {
+    let modalHeight;
     let modalWidth;
     let modalGap;
 
     if (width > 730) {
         modalWidth = '600px';
+        modalHeight = '550px';
         modalGap = '1.6rem';
     }
     else if (width > 300) {
+        modalHeight = '450px';
         modalWidth = `${(width - 140).toString()}px`;
         modalGap = '2.2rem';
     }
     else {
+        modalHeight = '400px';
         modalWidth = '160px';
         modalGap = '2.8rem';
     }
@@ -18,7 +22,7 @@ const ModalStylesMobile = (width) => {
     return {
         content: {
             width: modalWidth,
-            height: '540px',
+            height: modalHeight,
             margin: 'auto',
             borderRadius: '10px',
             display: 'flex',

@@ -19,12 +19,12 @@ body {
 
 @media (max-width: 500px) {
     html, body {
-        font-size: 12px;
+        font-size: 10px;
     }
 }
 
 @media (max-width: 375px) {
     html, body {
-        font-size: 10px;
+        font-size: 8px;
     }
 }
