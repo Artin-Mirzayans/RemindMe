@@ -1,18 +1,18 @@
 import React, { useState } from "react";
+import { useUser } from "../Auth/UserContext";
 import formatPhoneNumber from "./formatPhoneNumber";
 import renderVerificationStatusIcon from "./renderVerificationStatusIcon";
 
 import "./ProfileContent.css";
 
 interface ProfileContentProps {
-  email?: string;
   verificationStatus?: "verified" | "notVerified" | "pending";
 }
 
 const ProfileContent: React.FC<ProfileContentProps> = ({
-  email = "johndoe12345@gmail.com",
   verificationStatus = "pending",
 }) => {
+  const { user } = useUser();
   const [sms, setSms] = useState("");
 
   const handleSmsChange = (e) => {
@@ -33,7 +33,7 @@ const ProfileContent: React.FC<ProfileContentProps> = ({
             className="profile-content-input-field"
             type="email"
             id="email"
-            value={email}
+            value={user.email}
             readOnly
           />
           {renderVerificationStatusIcon("verified")}

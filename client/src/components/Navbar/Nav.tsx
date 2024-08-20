@@ -1,18 +1,26 @@
 import React, { useContext, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import PageSizeContext from "../PageSizeContext";
 import useElementHeight from "./useElementHeight";
 import MobileNav from "./MobileNav";
 import DesktopNav from "./DesktopNav";
+import { clearAuthTokens } from "../Auth/authUtils";
 
 const Nav: React.FC = () => {
   const { width } = useContext(PageSizeContext);
   const [navRef, navHeight] = useElementHeight();
   const isMobile = width <= 1070;
   const [isOpen, setIsOpen] = useState(false);
+  const navigate = useNavigate();
 
   const toggleMenu = () => {
     setIsOpen(!isOpen);
     document.querySelector(".content")?.classList.toggle("dimmed", !isOpen);
+  };
+
+  const handleLogout = () => {
+    clearAuthTokens();
+    navigate("/login");
   };
 
   return (
@@ -23,9 +31,10 @@ const Nav: React.FC = () => {
           isOpen={isOpen}
           toggleMenu={toggleMenu}
           navHeight={navHeight as number}
+          handleLogout={handleLogout}
         />
       ) : (
-        <DesktopNav />
+        <DesktopNav handleLogout={handleLogout} />
       )}
     </div>
   );

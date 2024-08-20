@@ -41,16 +41,13 @@
         margin-left: auto;
         gap: 2rem;
 
-        .nav-name {
-            display: none;
-            font-size: 2rem;
-            font-weight: 520;
+        a {
+          text-decoration: none;
+          color: inherit; /* Inherit color from parent */
         }
 
-        @media (min-width: 1350px) {
-            .nav-name {
-              display: block;
-            }
+        a:focus {
+          outline: none;
         }
     }
 
@@ -105,6 +102,15 @@
           display: flex;
           flex-direction: column;
           padding: 2rem;
+
+          a {
+            text-decoration: none;
+            color: inherit; /* Inherit color from parent */
+          }
+  
+          a:focus {
+            outline: none;
+          }
 
           .mobile-nav-link {
             display: flex;

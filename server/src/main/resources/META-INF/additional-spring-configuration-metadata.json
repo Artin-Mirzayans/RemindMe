@@ -1,0 +1,24 @@
+{
+  "properties": [
+    {
+      "name": "oauth.client_id",
+      "type": "java.lang.String",
+      "description": "Google OAuth client id"
+    },
+    {
+      "name": "oauth.client_secret",
+      "type": "java.lang.String",
+      "description": "Google OAuth client secret"
+    },
+    {
+      "name": "oauth.redirect_uri",
+      "type": "java.lang.String",
+      "description": "Google OAuth 'oauth.redirect_uri'"
+    },
+    {
+      "name": "cors.allowed_origins",
+      "type": "java.lang.String",
+      "description": "CORS allowed origins"
+    }
+  ]
+}
