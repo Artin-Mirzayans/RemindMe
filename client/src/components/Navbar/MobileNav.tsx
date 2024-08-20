@@ -5,6 +5,7 @@ import Hamburger from "hamburger-react";
 import { LuHome } from "react-icons/lu";
 import { CgProfile } from "react-icons/cg";
 import { TbZoomQuestion } from "react-icons/tb";
+import { FaGithub } from "react-icons/fa6";
 import { MdLogout } from "react-icons/md";
 
 import Logo from "./Logo";
@@ -15,12 +16,14 @@ interface MobileNavProps {
   isOpen: boolean;
   toggleMenu: () => void;
   navHeight: number;
+  handleLogout: () => void;
 }
 
 const MobileNav: React.FC<MobileNavProps> = ({
   isOpen,
   toggleMenu,
   navHeight,
+  handleLogout,
 }) => {
   return (
     <div className="mobile-nav">
@@ -49,12 +52,24 @@ const MobileNav: React.FC<MobileNavProps> = ({
               <TbZoomQuestion size={47} />
             </span>
           </Link>
-          <Link to="login" className="mobile-nav-link" onClick={toggleMenu}>
+          <a
+            href="https://github.com/Artin-Mirzayans/RemindMe"
+            className="mobile-nav-link"
+            target="_blank"
+            rel="noopener noreferrer"
+            onClick={toggleMenu} // Close the menu when the link is clicked
+          >
+            <span className="mobile-nav-desc">GitHub</span>
+            <span className="mobile-nav-icon">
+              <FaGithub size={47} />
+            </span>
+          </a>
+          <a className="mobile-nav-link" onClick={handleLogout} href="">
             <span className="mobile-nav-desc">Logout</span>
             <span className="mobile-nav-icon">
               <MdLogout size={42} />
             </span>
-          </Link>
+          </a>
         </div>
       </div>
     </div>
