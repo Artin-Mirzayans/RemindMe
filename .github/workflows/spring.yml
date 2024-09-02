@@ -74,7 +74,7 @@ jobs:
 
       - name: SSH into EC2 & Deploy
         run: |
-          ssh -o StrictHostKeyChecking=no ubuntu@ec2-54-151-20-245.us-west-1.compute.amazonaws.com "/home/ubuntu/deploy.sh"
+          ssh -o StrictHostKeyChecking=no ubuntu@ec2-54-151-20-245.us-west-1.compute.amazonaws.com "sudo systemctl restart remindme"
 
       - name: Revoke runner IP address
         if: always()
