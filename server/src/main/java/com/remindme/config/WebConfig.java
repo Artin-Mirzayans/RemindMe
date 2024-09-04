@@ -1,23 +1,61 @@
 package com.remindme.config;
 
+import java.util.Arrays;
+
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.web.servlet.FilterRegistrationBean;
+import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.lang.NonNull;
-import org.springframework.web.servlet.config.annotation.CorsRegistry;
-import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
+import org.springframework.core.env.Environment;
+import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
+import org.springframework.web.filter.CorsFilter;
+
+import com.remindme.filters.TokenValidationFilter;
 
 @Configuration
-public class WebConfig implements WebMvcConfigurer {
+public class WebConfig {
 
     @Value("${cors.allowed_origins}")
     private String[] allowedOrigins;
 
-    @Override
-    public void addCorsMappings(@NonNull CorsRegistry registry) {
-        if (registry != null)
-            registry.addMapping("/**")
-                    .allowedOrigins(allowedOrigins)
-                    .allowedMethods("*")
-                    .allowedHeaders("*");
+    @Bean
+    public FilterRegistrationBean<CorsFilter> corsFilterRegistration() {
+        CorsConfiguration configuration = new CorsConfiguration();
+        configuration.setAllowedOrigins(Arrays.asList(allowedOrigins));
+        configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS"));
+        configuration.setAllowedHeaders(Arrays.asList("*"));
+
+        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+        source.registerCorsConfiguration("/**", configuration);
+
+        FilterRegistrationBean<CorsFilter> registration = new FilterRegistrationBean<>(new CorsFilter(source));
+        registration.setOrder(1);
+        return registration;
     }
+
+    @Bean
+    public FilterRegistrationBean<TokenValidationFilter> tokenValidationFilterRegistration(Environment environment) {
+        FilterRegistrationBean<TokenValidationFilter> registration = new FilterRegistrationBean<>();
+        registration.setFilter(new TokenValidationFilter(environment));
+        registration.addUrlPatterns("/reminders/*");
+        registration.setOrder(2);
+        return registration;
+    }
+
+    // @Bean
+    // TokenValidationFilter tokenValidationFilter() {
+    // return new TokenValidationFilter();
+    // }
+
+    // @Bean
+    // public FilterRegistrationBean<TokenValidationFilter>
+    // tokenValidationFilterRegistration() {
+    // FilterRegistrationBean<TokenValidationFilter> registration = new
+    // FilterRegistrationBean<>();
+    // registration.setFilter(tokenValidationFilter());
+    // registration.addUrlPatterns("/reminders/*");
+    // // Apply filter only to /reminders/* pattern
+    // return registration;
+    // }
 }

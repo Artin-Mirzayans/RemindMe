@@ -26,6 +26,7 @@ const InputFields: React.FC<InputFieldsProps> = ({
       value={description}
       onChange={(e) => setDescription(e.target.value)}
       placeholder="Description"
+      maxLength={20}
     />
     <DatePicker
       className="reminder-add-modal-input"

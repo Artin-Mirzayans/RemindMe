@@ -1,10 +1,12 @@
-import React, { useReducer, useMemo, useContext } from "react";
+import React, { useReducer, useMemo, useContext, useState } from "react";
 import Modal from "react-modal";
+import apiClient from "../../Auth/apiClient";
 import ModalStyles from "./ModalStyles";
 import ModalStylesMobile from "./ModalStyles-mobile";
 import ContactMethod from "./ContactMethod";
 import InputFields from "./InputFields";
 import PageSizeContext from "../../PageSizeContext";
+import { useUser } from "../../Auth/UserContext";
 import { ReminderProps } from "../../../props/ReminderProps";
 import { FaRegCircleCheck } from "react-icons/fa6";
 import { MdCancel } from "react-icons/md";
@@ -15,9 +17,10 @@ import "./ReminderAddModal.css";
 import "react-datepicker/dist/react-datepicker.css";
 
 interface ReminderAddModalProps {
+  reminders;
   isOpen: boolean;
   onClose: () => void;
-  onAddReminder: (reminder: ReminderProps, timeZone: string) => void;
+  onAddReminder: (reminder: ReminderProps) => void;
   isSMSEnabled: boolean;
 }
 
@@ -60,6 +63,7 @@ const reducer = (state: State, action: Action): State => {
 };
 
 const ReminderAddModal: React.FC<ReminderAddModalProps> = ({
+  reminders,
   isOpen,
   onClose,
   onAddReminder,
@@ -67,37 +71,75 @@ const ReminderAddModal: React.FC<ReminderAddModalProps> = ({
 }) => {
   const { width } = useContext(PageSizeContext);
   const [state, dispatch] = useReducer(reducer, initialState(isSMSEnabled));
+  const { user } = useUser();
+
+  const [loading, setLoading] = useState(false);
 
   const modalStyles = useMemo(() => {
     return width <= 1070 ? ModalStylesMobile(width) : ModalStyles;
   }, [width]);
 
   const iconSize = useMemo(() => {
-    if (width >= 1070) return 44;
+    if (width >= 1070) return 36;
     else if (width > 500) return 30;
     else return 22;
   }, [width]);
 
-  const handleAddReminder = () => {
-    let utcDateTimeString;
+  const createReminder = async (reminderData: {
+    contactMethod: "Email" | "Text";
+    description: string;
+    dateTime: string;
+  }) => {
+    const response = await apiClient.post("/reminders", reminderData);
+    return response.data;
+  };
+
+  const handleAddReminder = async () => {
+    let dateTime: string;
     const timeZone = Intl.DateTimeFormat().resolvedOptions().timeZone;
     if (state.date && state.time) {
       const localDateTime = new Date(
         `${format(state.date, "yyyy-MM-dd")}T${format(state.time, "HH:mm:ss")}`
       );
       const utcDateTime = fromZonedTime(localDateTime, timeZone);
-      utcDateTimeString = utcDateTime.toISOString();
+      dateTime = utcDateTime.toISOString().split(".")[0] + "Z";
     } else {
       console.log("date/time invalid");
       return;
     }
 
+    const existingReminder = reminders.find(
+      (reminder) =>
+        reminder.dateTime === dateTime && reminder.userId === user.email
+    );
+
+    if (existingReminder) {
+      alert("A reminder with the same date/time has already been created");
+      return;
+    }
     const reminderData = {
       contactMethod: state.contactMethod,
       description: state.description,
-      utcDateTimeString,
+      dateTime: dateTime,
     };
-    onAddReminder(reminderData, timeZone);
+
+    try {
+      setLoading(true);
+      await createReminder(reminderData);
+      onAddReminder(reminderData);
+      setLoading(false);
+    } catch (error) {
+      setLoading(false);
+      console.error("Failed to create reminder:", error);
+      if (error.response?.status == 400)
+        alert(
+          "Description must be at least 3 characters\nDate/Time must be in future"
+        );
+      else {
+        alert("Unknown Error");
+      }
+    }
+
     dispatch({ type: "RESET" });
     onClose();
   };
@@ -128,6 +170,12 @@ const ReminderAddModal: React.FC<ReminderAddModalProps> = ({
         time={state.time}
         setTime={(time) => dispatch({ type: "SET_TIME", payload: time })}
       />
+      {loading && (
+        <div className="loading-spinner">
+          <div className="spinner"></div>
+          <p>Submitting...</p>
+        </div>
+      )}
       <div className="reminder-add-modal-buttons">
         <button onClick={handleAddReminder}>
           <FaRegCircleCheck size={iconSize} />
