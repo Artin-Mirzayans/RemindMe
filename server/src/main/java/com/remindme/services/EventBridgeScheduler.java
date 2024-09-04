@@ -19,16 +19,17 @@ public class EventBridgeScheduler {
         this.targetFactory = targetFactory;
     }
 
-    public boolean createSchedule(Reminder reminder) {
+    public boolean createSchedule(Reminder reminder, String userId) {
         try {
             String contactMethod = reminder.getContactMethod();
             Target target = targetFactory.createLambdaTarget(contactMethod);
 
-            String scheduleName = reminder.getUserId() + "-" + System.currentTimeMillis();
-
             String utcDateTime = reminder.getDateTime();
             String scheduleDateTime = utcDateTime.length() > 0 ? utcDateTime.substring(0, utcDateTime.length() - 1)
                     : utcDateTime;
+
+            String sanitizedUserId = userId.replaceFirst("@", "-");
+            String scheduleName = sanitizedUserId + "-" + contactMethod + "-" + utcDateTime.replace(":", ".");
 
             CreateScheduleRequest createScheduleRequest = CreateScheduleRequest.builder()
                     .name(scheduleName)
@@ -48,15 +49,16 @@ public class EventBridgeScheduler {
             System.err.println("EventBridge scheduler error" + e.getMessage());
             return false;
         } catch (Exception e) {
-            System.err.println("An error occurred: " + e.getMessage());
+            System.out.println("An error occurred: " + e.getMessage());
             return false;
         }
     }
 
-    public boolean deleteSchedule(String reminderId, String contactMethod) {
+    public boolean deleteSchedule(String userId, String contactMethod, String dateTime) {
+        String scheduleName = userId.replaceFirst("@", "-") + "-" + contactMethod + "-" + dateTime.replace(":", ".");
         try {
             DeleteScheduleRequest deleteScheduleRequest = DeleteScheduleRequest.builder()
-                    .name(reminderId)
+                    .name(scheduleName)
                     .groupName(contactMethod)
                     .build();
 
@@ -64,7 +66,7 @@ public class EventBridgeScheduler {
 
             return true;
         } catch (SchedulerException e) {
-            System.err.println("Failed to delete schedule with ID " + reminderId + ": " + e.getMessage());
+            System.out.println("Failed to delete schedule with ID " + scheduleName + ": " + e.getMessage());
             return false;
         }
     }

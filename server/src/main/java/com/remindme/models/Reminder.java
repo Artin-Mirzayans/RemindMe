@@ -21,6 +21,7 @@ public class Reminder {
     private String dateTime;
 
     @NotNull(message = "Description cannot be null")
+    @Size(min = 3, message = "Description must be at least 3 characters long")
     @Size(max = 20, message = "Description must be at most 20 characters long")
     private String description;
 
@@ -74,7 +75,7 @@ public class Reminder {
 
     }
 
-    public Map<String, AttributeValue> toItem() {
+    public Map<String, AttributeValue> toItem(String userId) {
         Map<String, AttributeValue> item = new HashMap<>();
         item.put("UserId", AttributeValue.builder().s(userId).build());
         item.put("DateTime", AttributeValue.builder().s(dateTime).build());

@@ -16,17 +16,19 @@ public class ReminderService {
         this.eventBridgeScheduler = eventBridgeScheduler;
     }
 
-    public boolean createReminder(Reminder reminder) {
-        Boolean createdReminder = reminderRepository.saveReminder(reminder);
-        Boolean createdScheduler = eventBridgeScheduler.createSchedule(reminder);
+    public boolean createReminder(Reminder reminder, String userId) {
+        Boolean createdReminder = reminderRepository.saveReminder(reminder, userId);
+        Boolean createdScheduler = eventBridgeScheduler.createSchedule(reminder, userId);
         return createdReminder && createdScheduler;
     }
 
-    public List<Reminder> getReminders() {
-        return reminderRepository.findAll("1");
+    public List<Reminder> getReminders(String userId) {
+        return reminderRepository.findAll(userId);
     }
 
-    public boolean deleteReminder(String reminderId, String contactMethod) {
-        return eventBridgeScheduler.deleteSchedule(reminderId, contactMethod);
+    public boolean deleteReminder(String userId, String contactMethod, String dateTime) {
+        Boolean deletedReminder = reminderRepository.deleteReminder(userId, dateTime);
+        Boolean deletedScheduler = eventBridgeScheduler.deleteSchedule(userId, contactMethod, dateTime);
+        return deletedReminder && deletedScheduler;
     }
 }

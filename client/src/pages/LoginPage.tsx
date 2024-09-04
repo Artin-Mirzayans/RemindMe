@@ -22,11 +22,26 @@ const LoginPage = () => {
     const refreshToken = localStorage.getItem("refresh_token");
 
     if (accessToken) {
-      console.log(accessToken);
       const { isValid, email } = await validateAccessToken(accessToken);
       if (isValid && email) {
         setUser({ email });
         navigate("/");
+      } else {
+        const newAccessToken = await refreshAccessToken(refreshToken);
+        if (newAccessToken) {
+          const { isValid, email } = await validateAccessToken(newAccessToken);
+          if (isValid && email) {
+            setUser({ email });
+            localStorage.setItem("access_token", newAccessToken);
+            navigate("/");
+          } else {
+            clearAuthTokens();
+            window.location.href = authUrl;
+          }
+        } else {
+          clearAuthTokens();
+          window.location.href = authUrl;
+        }
       }
     } else if (refreshToken) {
       const newAccessToken = await refreshAccessToken(refreshToken);
@@ -45,7 +60,6 @@ const LoginPage = () => {
         window.location.href = authUrl;
       }
     } else {
-      console.log("gotta sign in w/ google");
       window.location.href = authUrl;
     }
     setLoading(false);

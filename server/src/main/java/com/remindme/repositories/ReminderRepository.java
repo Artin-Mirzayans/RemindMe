@@ -9,6 +9,8 @@ import java.util.stream.Collectors;
 
 import software.amazon.awssdk.services.dynamodb.DynamoDbClient;
 import software.amazon.awssdk.services.dynamodb.model.AttributeValue;
+import software.amazon.awssdk.services.dynamodb.model.DeleteItemRequest;
+import software.amazon.awssdk.services.dynamodb.model.DeleteItemResponse;
 import software.amazon.awssdk.services.dynamodb.model.DynamoDbException;
 import software.amazon.awssdk.services.dynamodb.model.PutItemRequest;
 import software.amazon.awssdk.services.dynamodb.model.PutItemResponse;
@@ -28,11 +30,11 @@ public class ReminderRepository {
         this.dynamoDbClient = dynamoDbClient;
     }
 
-    public boolean saveReminder(Reminder reminder) {
+    public boolean saveReminder(Reminder reminder, String userId) {
         try {
             PutItemRequest request = PutItemRequest.builder()
                     .tableName(tableName)
-                    .item(reminder.toItem())
+                    .item(reminder.toItem(userId))
                     .build();
 
             PutItemResponse response = dynamoDbClient.putItem(request);
@@ -83,6 +85,27 @@ public class ReminderRepository {
         } catch (Exception e) {
             System.err.println("An error occurred: " + e.getMessage());
             return Collections.emptyList();
+        }
+    }
+
+    public boolean deleteReminder(String userId, String dateTime) {
+        try {
+            DeleteItemRequest request = DeleteItemRequest.builder()
+                    .tableName(tableName)
+                    .key(Map.of(
+                            "UserId", AttributeValue.builder().s(userId).build(),
+                            "DateTime", AttributeValue.builder().s(dateTime).build()))
+                    .build();
+
+            DeleteItemResponse response = dynamoDbClient.deleteItem(request);
+
+            return response.sdkHttpResponse().isSuccessful();
+        } catch (DynamoDbException e) {
+            System.out.println("DynamoDB Error: " + e.getMessage());
+            return false;
+        } catch (Exception e) {
+            System.out.println("An error occurred: " + e.getMessage());
+            return false;
         }
     }
 

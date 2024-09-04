@@ -1,7 +1,6 @@
 .reminder-add-button {
     display: flex;
     justify-content: center;
-    padding-top: 1.4rem;
     button {
         font-family: 'Noto Sans', sans-serif;
         cursor: pointer;

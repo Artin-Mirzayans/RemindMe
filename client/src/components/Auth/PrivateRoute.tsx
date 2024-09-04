@@ -26,13 +26,10 @@ const PrivateRoute: React.FC<PrivateRouteProps> = ({ element: Component }) => {
         if (isValid && email) {
           setUser({ email });
           setIsAuthenticated(true);
-          console.log("we have valid access token: " + accessToken);
         }
       } else if (refreshToken) {
-        console.log("we have refresh token: " + refreshToken);
         const newAccessToken = await refreshAccessToken(refreshToken);
         if (newAccessToken) {
-          console.log("got new access token!");
           const { isValid, email } = await validateAccessToken(newAccessToken);
           if (isValid && email) {
             setUser({ email });
@@ -43,12 +40,10 @@ const PrivateRoute: React.FC<PrivateRouteProps> = ({ element: Component }) => {
             setIsAuthenticated(false);
           }
         } else {
-          console.log("failure getting new access token");
           clearAuthTokens();
           setIsAuthenticated(false);
         }
       } else {
-        console.log("no tokens found");
         setIsAuthenticated(false);
       }
 
