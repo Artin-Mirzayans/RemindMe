@@ -10,7 +10,7 @@ import { useUser } from "../components/Auth/UserContext";
 const CLIENT_ID =
   "344473433718-a1vsjaaules6d3i934gmnbjs72nep4va.apps.googleusercontent.com";
 const REDIRECT_URI = process.env.OAUTH_REDIRECT_URI;
-const authUrl = `https://accounts.google.com/o/oauth2/v2/auth?client_id=${CLIENT_ID}&redirect_uri=${REDIRECT_URI}&response_type=code&scope=email&access_type=offline`;
+const authUrl = `https://accounts.google.com/o/oauth2/v2/auth?client_id=${CLIENT_ID}&redirect_uri=${REDIRECT_URI}&response_type=code&scope=email&access_type=offline&prompt_type=consent`;
 
 const LoginPage = () => {
   const [loading, setLoading] = useState(false);
