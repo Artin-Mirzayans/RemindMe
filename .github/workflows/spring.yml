@@ -3,11 +3,11 @@ name: Spring CI/CD
 on:
   push:
     branches:
-      - master
+      - master # Automatically run on merge to master
   pull_request:
     branches:
-      - "*"
-  workflow_dispatch:
+      - "*" # Allows triggering deploy on pull request if needed
+  workflow_dispatch: # Manual trigger for deployment
 
 jobs:
   build:
@@ -77,4 +77,13 @@ jobs:
 
       - name: SSH into EC2 & Deploy
         run: |
-          ssh -o StrictHostKeyChecking=no ubuntu@ec2-54-151-20-245
+          ssh -o StrictHostKeyChecking=no ubuntu@ec2-54-151-20-245.us-west-1.compute.amazonaws.com "/home/ubuntu/deploy.sh"
+
+      - name: Revoke runner IP address
+        if: always()
+        run: |
+          aws ec2 revoke-security-group-ingress \
+            --group-id ${{ secrets.AWS_INSTANCE_SG_ID }} \
+            --protocol tcp \
+            --port 22 \
+            --cidr ${{ steps.ip.outputs.ipv4 }}/32
