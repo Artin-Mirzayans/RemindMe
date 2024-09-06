@@ -20,7 +20,7 @@ public class WebConfig {
     private String[] allowedOrigins;
 
     @Bean
-    public FilterRegistrationBean<CorsFilter> corsFilterRegistration() {
+    FilterRegistrationBean<CorsFilter> corsFilterRegistration() {
         CorsConfiguration configuration = new CorsConfiguration();
         configuration.setAllowedOrigins(Arrays.asList(allowedOrigins));
         configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS"));
@@ -35,27 +35,11 @@ public class WebConfig {
     }
 
     @Bean
-    public FilterRegistrationBean<TokenValidationFilter> tokenValidationFilterRegistration(Environment environment) {
+    FilterRegistrationBean<TokenValidationFilter> tokenValidationFilterRegistration(Environment environment) {
         FilterRegistrationBean<TokenValidationFilter> registration = new FilterRegistrationBean<>();
         registration.setFilter(new TokenValidationFilter(environment));
-        registration.addUrlPatterns("/reminders/*");
+        registration.addUrlPatterns("/reminders/*", "/users/*", "/otp/*");
         registration.setOrder(2);
         return registration;
     }
-
-    // @Bean
-    // TokenValidationFilter tokenValidationFilter() {
-    // return new TokenValidationFilter();
-    // }
-
-    // @Bean
-    // public FilterRegistrationBean<TokenValidationFilter>
-    // tokenValidationFilterRegistration() {
-    // FilterRegistrationBean<TokenValidationFilter> registration = new
-    // FilterRegistrationBean<>();
-    // registration.setFilter(tokenValidationFilter());
-    // registration.addUrlPatterns("/reminders/*");
-    // // Apply filter only to /reminders/* pattern
-    // return registration;
-    // }
 }

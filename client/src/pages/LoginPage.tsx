@@ -4,13 +4,14 @@ import {
   clearAuthTokens,
   refreshAccessToken,
   validateAccessToken,
+  fetchUserData,
 } from "../components/Auth/authUtils";
 import { useUser } from "../components/Auth/UserContext";
 
 const CLIENT_ID =
   "344473433718-a1vsjaaules6d3i934gmnbjs72nep4va.apps.googleusercontent.com";
 const REDIRECT_URI = process.env.OAUTH_REDIRECT_URI;
-const authUrl = `https://accounts.google.com/o/oauth2/v2/auth?client_id=${CLIENT_ID}&redirect_uri=${REDIRECT_URI}&response_type=code&scope=email&access_type=offline`;
+const authUrl = `https://accounts.google.com/o/oauth2/v2/auth?client_id=${CLIENT_ID}&redirect_uri=${REDIRECT_URI}&response_type=code&scope=email&access_type=offline&prompt=consent`;
 
 const LoginPage = () => {
   const [loading, setLoading] = useState(false);
@@ -18,20 +19,44 @@ const LoginPage = () => {
   const { setUser } = useUser();
 
   const handleLogin = async () => {
+    setLoading(true);
     const accessToken = localStorage.getItem("access_token");
     const refreshToken = localStorage.getItem("refresh_token");
 
-    if (accessToken) {
-      const { isValid, email } = await validateAccessToken(accessToken);
-      if (isValid && email) {
-        setUser({ email });
-        navigate("/");
-      } else {
+    try {
+      if (accessToken) {
+        const { isValid, email } = await validateAccessToken(accessToken);
+        if (isValid && email) {
+          const userData = await fetchUserData(email);
+          setUser(userData);
+          navigate("/");
+        } else {
+          const newAccessToken = await refreshAccessToken(refreshToken);
+          if (newAccessToken) {
+            const { isValid, email } = await validateAccessToken(
+              newAccessToken
+            );
+            if (isValid && email) {
+              const userData = await fetchUserData(email);
+              setUser(userData);
+              localStorage.setItem("access_token", newAccessToken);
+              navigate("/");
+            } else {
+              clearAuthTokens();
+              window.location.href = authUrl;
+            }
+          } else {
+            clearAuthTokens();
+            window.location.href = authUrl;
+          }
+        }
+      } else if (refreshToken) {
         const newAccessToken = await refreshAccessToken(refreshToken);
         if (newAccessToken) {
           const { isValid, email } = await validateAccessToken(newAccessToken);
           if (isValid && email) {
-            setUser({ email });
+            const userData = await fetchUserData(email);
+            setUser(userData);
             localStorage.setItem("access_token", newAccessToken);
             navigate("/");
           } else {
@@ -42,26 +67,15 @@ const LoginPage = () => {
           clearAuthTokens();
           window.location.href = authUrl;
         }
-      }
-    } else if (refreshToken) {
-      const newAccessToken = await refreshAccessToken(refreshToken);
-      if (newAccessToken) {
-        const { isValid, email } = await validateAccessToken(newAccessToken);
-        if (isValid && email) {
-          setUser({ email });
-          localStorage.setItem("access_token", newAccessToken);
-          navigate("/");
-        } else {
-          clearAuthTokens();
-          window.location.href = authUrl;
-        }
       } else {
-        clearAuthTokens();
         window.location.href = authUrl;
       }
-    } else {
+    } catch (error) {
+      console.error("Error during login process:", error);
+      clearAuthTokens();
       window.location.href = authUrl;
     }
+
     setLoading(false);
   };
 

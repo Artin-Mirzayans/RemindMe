@@ -1,4 +1,5 @@
 import axios from "axios";
+import apiClient from "./apiClient";
 
 export const validateAccessToken = async (
     token: string
@@ -33,6 +34,36 @@ export const refreshAccessToken = async (refreshToken: string) => {
         return newAccessToken;
     }
 };
+
+export const fetchUserData = async (email: string) => {
+    return apiClient
+        .get('/users', {
+        })
+        .then((response) => {
+            if (response.status === 200) {
+                const userData = response.data;
+                return {
+                    email,
+                    ...userData,
+                };
+            }
+        })
+        .catch((error) => {
+            if (error.response) {
+                if (error.response.status === 404) {
+                    return {
+                        email,
+                        phoneNumber: null,
+                        isVerified: false,
+                        lastOtpSentTimestamp: null,
+                    };
+                }
+            } else {
+                console.log('Error Message:', error.message);
+            }
+        });
+};
+
 
 export const clearAuthTokens = () => {
     localStorage.removeItem("refresh_token");

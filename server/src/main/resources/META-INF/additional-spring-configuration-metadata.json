@@ -19,6 +19,11 @@
       "name": "cors.allowed_origins",
       "type": "java.lang.String",
       "description": "CORS allowed origins"
+    },
+    {
+      "name": "pinpoint.origination_number",
+      "type": "java.lang.String",
+      "description": "Pinpoint sender phone number'"
     }
   ]
 }
