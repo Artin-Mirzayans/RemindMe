@@ -54,7 +54,6 @@ const ReminderContent = () => {
         isOpen={isModalOpen}
         onClose={() => setIsModalOpen(false)}
         onAddReminder={onAddReminder}
-        isSMSEnabled={false}
       />
       {loading ? (
         <p>Loading...</p>

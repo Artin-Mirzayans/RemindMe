@@ -1,7 +1,10 @@
 import React, { createContext, useContext, useState, ReactNode } from "react";
 
-interface User {
+export interface User {
   email: string;
+  phoneNumber: string;
+  isVerified: boolean;
+  lastOtpSentTimestamp: number;
 }
 
 interface UserContextType {

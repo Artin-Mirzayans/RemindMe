@@ -21,7 +21,6 @@ interface ReminderAddModalProps {
   isOpen: boolean;
   onClose: () => void;
   onAddReminder: (reminder: ReminderProps) => void;
-  isSMSEnabled: boolean;
 }
 
 interface State {
@@ -38,9 +37,9 @@ type Action =
   | { type: "SET_TIME"; payload: Date | null }
   | { type: "RESET" };
 
-const initialState = (isSMSEnabled: boolean): State => ({
+const initialState = (isVerified: boolean): State => ({
   description: "",
-  contactMethod: isSMSEnabled ? "Text" : "Email",
+  contactMethod: isVerified ? "Text" : "Email",
   date: null,
   time: null,
 });
@@ -67,11 +66,10 @@ const ReminderAddModal: React.FC<ReminderAddModalProps> = ({
   isOpen,
   onClose,
   onAddReminder,
-  isSMSEnabled,
 }) => {
   const { width } = useContext(PageSizeContext);
-  const [state, dispatch] = useReducer(reducer, initialState(isSMSEnabled));
   const { user } = useUser();
+  const [state, dispatch] = useReducer(reducer, initialState(user.isVerified));
 
   const [loading, setLoading] = useState(false);
 
@@ -123,22 +121,23 @@ const ReminderAddModal: React.FC<ReminderAddModalProps> = ({
       dateTime: dateTime,
     };
 
-    try {
-      setLoading(true);
-      await createReminder(reminderData);
-      onAddReminder(reminderData);
-      setLoading(false);
-    } catch (error) {
-      setLoading(false);
-      console.error("Failed to create reminder:", error);
-      if (error.response?.status == 400)
-        alert(
-          "Description must be at least 3 characters\nDate/Time must be in future"
-        );
-      else {
-        alert("Unknown Error");
-      }
-    }
+    setLoading(true);
+    createReminder(reminderData)
+      .then(() => {
+        onAddReminder(reminderData);
+        setLoading(false);
+      })
+      .catch((error) => {
+        setLoading(false);
+        console.error("Failed to create reminder:", error);
+        if (error.response?.status == 400)
+          alert(
+            "Description must be at least 3 characters\nDate/Time must be in future"
+          );
+        else {
+          alert("Unknown Error");
+        }
+      });
 
     dispatch({ type: "RESET" });
     onClose();
@@ -158,7 +157,7 @@ const ReminderAddModal: React.FC<ReminderAddModalProps> = ({
         setContactMethod={(method) =>
           dispatch({ type: "SET_CONTACT_METHOD", payload: method })
         }
-        isSMSEnabled={isSMSEnabled}
+        isSMSEnabled={user.isVerified}
       />
       <InputFields
         description={state.description}
@@ -177,11 +176,11 @@ const ReminderAddModal: React.FC<ReminderAddModalProps> = ({
         </div>
       )}
       <div className="reminder-add-modal-buttons">
-        <button onClick={handleAddReminder}>
-          <FaRegCircleCheck size={iconSize} />
-        </button>
         <button onClick={onClose}>
           <MdCancel size={iconSize} />
+        </button>
+        <button onClick={handleAddReminder}>
+          <FaRegCircleCheck size={iconSize} />
         </button>
       </div>
     </Modal>

@@ -5,6 +5,7 @@ import {
   clearAuthTokens,
   refreshAccessToken,
   validateAccessToken,
+  fetchUserData,
 } from "./authUtils";
 
 interface PrivateRouteProps {
@@ -21,18 +22,33 @@ const PrivateRoute: React.FC<PrivateRouteProps> = ({ element: Component }) => {
     const checkAuth = async () => {
       const accessToken = localStorage.getItem("access_token");
       const refreshToken = localStorage.getItem("refresh_token");
+
       if (accessToken) {
         const { isValid, email } = await validateAccessToken(accessToken);
         if (isValid && email) {
-          setUser({ email });
+          const userData = await fetchUserData(email);
+          setUser(userData);
           setIsAuthenticated(true);
+        } else {
+          await handleRefreshToken(refreshToken);
         }
       } else if (refreshToken) {
+        await handleRefreshToken(refreshToken);
+      } else {
+        setIsAuthenticated(false);
+      }
+
+      setLoading(false);
+    };
+
+    const handleRefreshToken = async (refreshToken: string | null) => {
+      if (refreshToken) {
         const newAccessToken = await refreshAccessToken(refreshToken);
         if (newAccessToken) {
           const { isValid, email } = await validateAccessToken(newAccessToken);
           if (isValid && email) {
-            setUser({ email });
+            const userData = await fetchUserData(email);
+            setUser(userData);
             localStorage.setItem("access_token", newAccessToken);
             setIsAuthenticated(true);
           } else {
@@ -44,14 +60,13 @@ const PrivateRoute: React.FC<PrivateRouteProps> = ({ element: Component }) => {
           setIsAuthenticated(false);
         }
       } else {
+        clearAuthTokens();
         setIsAuthenticated(false);
       }
-
-      setLoading(false);
     };
 
     checkAuth();
-  }, []);
+  }, [setUser]);
 
   if (loading) {
     return <div>Loading...</div>; // Or some loading spinner

@@ -23,7 +23,7 @@ const ReminderAddButton: React.FC<ReminderAddButtonProps> = ({
     <div className="reminder-add-button">
       <button onClick={handleMaxReminders}>
         <span>
-          <IoCreateSharp size={48} />
+          <IoCreateSharp size={44} />
         </span>
       </button>
     </div>
