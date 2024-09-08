@@ -1,92 +1,55 @@
-import React, { useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import {
-  clearAuthTokens,
-  refreshAccessToken,
-  validateAccessToken,
-  fetchUserData,
-} from "../components/Auth/authUtils";
 import { useUser } from "../components/Auth/UserContext";
+import { handleLogin } from "../components/Auth/handleLogin";
+import PageSizeContext from "../components/PageSizeContext";
+import logo from "../assets/logo-no-background.png";
+import mobileWorry from "../assets/worry-less-mobile.jpg";
+import worry from "../assets/worry-less-large.jpg";
 
-const CLIENT_ID =
-  "344473433718-a1vsjaaules6d3i934gmnbjs72nep4va.apps.googleusercontent.com";
-const REDIRECT_URI = process.env.OAUTH_REDIRECT_URI;
-const authUrl = `https://accounts.google.com/o/oauth2/v2/auth?client_id=${CLIENT_ID}&redirect_uri=${REDIRECT_URI}&response_type=code&scope=email&access_type=offline&prompt=consent`;
+import "./LoginPage.css";
 
 const LoginPage = () => {
-  const [loading, setLoading] = useState(false);
+  const [currentBackground, setCurrentBackground] = useState<string>(worry);
   const navigate = useNavigate();
+  const { width } = useContext(PageSizeContext);
   const { setUser } = useUser();
 
-  const handleLogin = async () => {
-    setLoading(true);
-    const accessToken = localStorage.getItem("access_token");
-    const refreshToken = localStorage.getItem("refresh_token");
-
-    try {
-      if (accessToken) {
-        const { isValid, email } = await validateAccessToken(accessToken);
-        if (isValid && email) {
-          const userData = await fetchUserData(email);
-          setUser(userData);
-          navigate("/");
-        } else {
-          const newAccessToken = await refreshAccessToken(refreshToken);
-          if (newAccessToken) {
-            const { isValid, email } = await validateAccessToken(
-              newAccessToken
-            );
-            if (isValid && email) {
-              const userData = await fetchUserData(email);
-              setUser(userData);
-              localStorage.setItem("access_token", newAccessToken);
-              navigate("/");
-            } else {
-              clearAuthTokens();
-              window.location.href = authUrl;
-            }
-          } else {
-            clearAuthTokens();
-            window.location.href = authUrl;
-          }
-        }
-      } else if (refreshToken) {
-        const newAccessToken = await refreshAccessToken(refreshToken);
-        if (newAccessToken) {
-          const { isValid, email } = await validateAccessToken(newAccessToken);
-          if (isValid && email) {
-            const userData = await fetchUserData(email);
-            setUser(userData);
-            localStorage.setItem("access_token", newAccessToken);
-            navigate("/");
-          } else {
-            clearAuthTokens();
-            window.location.href = authUrl;
-          }
-        } else {
-          clearAuthTokens();
-          window.location.href = authUrl;
-        }
-      } else {
-        window.location.href = authUrl;
-      }
-    } catch (error) {
-      console.error("Error during login process:", error);
-      clearAuthTokens();
-      window.location.href = authUrl;
-    }
-
-    setLoading(false);
+  const onLoginClick = () => {
+    handleLogin(setUser, navigate);
   };
 
-  if (loading) {
-    return <div>Loading...</div>;
-  }
+  useEffect(() => {
+    if (width < 600) {
+      setCurrentBackground(mobileWorry);
+    } else {
+      setCurrentBackground(worry);
+    }
+  }, [width]);
+
+  const style = {
+    backgroundImage: `linear-gradient(rgba(255, 255, 255, 0.2), rgba(255, 255, 255, 0.5)), url(${currentBackground})`,
+    backgroundSize: "cover",
+    backgroundPosition: "center",
+    backgroundRepeat: "no-repeat",
+  };
 
   return (
-    <div className="login-page">
-      <h1>Welcome to RemindMe</h1>
-      <button onClick={handleLogin}>Sign in with Google</button>
+    <div className="login-page" style={style}>
+      <div className="login-page-content">
+        <img className="login-page-logo" src={logo}></img>
+        <div className="login-page-slogan">
+          &quot;Simply Your Day, One Reminder Away &quot;
+        </div>
+        <div className="login-page-signin" onClick={onLoginClick}>
+          <img
+            src="https://developers.google.com/identity/images/g-logo.png"
+            alt="Google logo"
+            className="google-logo"
+          />
+          <div>Sign in with Google</div>
+        </div>
+      </div>
     </div>
   );
 };
