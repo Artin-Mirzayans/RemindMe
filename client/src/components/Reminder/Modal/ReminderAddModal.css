@@ -43,6 +43,10 @@
     border-color: #658352;
 }
 
+.react-datepicker__time-container {
+    font-size: .8rem;
+}
+
 .reminder-add-modal-buttons {
     display: flex;
     gap: 1.2rem;
@@ -86,4 +90,22 @@
    .reminder-add-modal {
        font-size: 9px;
    }
+}
+
+@media (max-width: 460px) {
+    .react-datepicker__time-container {
+        font-size: 1.8rem;
+    }
+    .react-datepicker__month-container {
+        font-size: 1.8rem;
+    }
+}
+
+@media (max-width: 1045px) {
+    .react-datepicker__time-container {
+        font-size: 1.3rem;
+    }
+    .react-datepicker__month-container {
+        font-size: 1.3rem;
+    }
 }
