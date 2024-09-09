@@ -3,7 +3,6 @@ import { Link } from "react-router-dom";
 
 import { LuHome } from "react-icons/lu";
 import { CgProfile } from "react-icons/cg";
-import { TbZoomQuestion } from "react-icons/tb";
 import { FaGithub } from "react-icons/fa";
 import { MdLogout } from "react-icons/md";
 
@@ -25,9 +24,6 @@ const DesktopNav: React.FC<DesktopNavProps> = ({ handleLogout }) => {
         </Link>
         <Link to="profile" className="nav-link">
           <CgProfile size={45} />
-        </Link>
-        <Link to="faq" className="nav-link">
-          <TbZoomQuestion size={47} />
         </Link>
       </div>
       <div className="nav-user">

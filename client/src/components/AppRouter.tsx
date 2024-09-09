@@ -5,7 +5,6 @@ import PrivateRoute from "./Auth/PrivateRoute";
 import AuthCallback from "./Auth/AuthCallback";
 import ReminderContent from "./Reminder/ReminderContent";
 import ProfileContent from "./Profile/ProfileContent";
-import FAQContent from "./FAQ/FAQContent";
 import LoginPage from "../pages/LoginPage";
 import MainPage from "../pages/MainPage";
 import { UserProvider } from "./Auth/UserContext";
@@ -20,7 +19,6 @@ const AppRouter = () => {
           <Route path="/" element={<PrivateRoute element={MainPage} />}>
             <Route index element={<ReminderContent />} />
             <Route path="profile" element={<ProfileContent />} />
-            <Route path="faq" element={<FAQContent />} />
           </Route>
           <Route path="*" element={<h1>CATCH ALL</h1>} />
         </Routes>

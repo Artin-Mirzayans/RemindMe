@@ -4,7 +4,6 @@ import { Link } from "react-router-dom";
 import Hamburger from "hamburger-react";
 import { LuHome } from "react-icons/lu";
 import { CgProfile } from "react-icons/cg";
-import { TbZoomQuestion } from "react-icons/tb";
 import { FaGithub } from "react-icons/fa6";
 import { MdLogout } from "react-icons/md";
 
@@ -44,12 +43,6 @@ const MobileNav: React.FC<MobileNavProps> = ({
             <span className="mobile-nav-desc">Profile</span>
             <span className="mobile-nav-icon">
               <CgProfile size={45} />
-            </span>
-          </Link>
-          <Link to="faq" className="mobile-nav-link" onClick={toggleMenu}>
-            <span className="mobile-nav-desc">FAQ</span>
-            <span className="mobile-nav-icon">
-              <TbZoomQuestion size={47} />
             </span>
           </Link>
           <a
