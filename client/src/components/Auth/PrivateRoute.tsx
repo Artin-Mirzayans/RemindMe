@@ -7,6 +7,7 @@ import {
   validateAccessToken,
   fetchUserData,
 } from "./authUtils";
+import Loader from "../Loader/Loader";
 
 interface PrivateRouteProps {
   element: React.FC;
@@ -69,7 +70,11 @@ const PrivateRoute: React.FC<PrivateRouteProps> = ({ element: Component }) => {
   }, [setUser]);
 
   if (loading) {
-    return <div>Loading...</div>; // Or some loading spinner
+    return (
+      <div className="auth-loader">
+        <Loader />
+      </div>
+    );
   }
 
   return isAuthenticated ? (

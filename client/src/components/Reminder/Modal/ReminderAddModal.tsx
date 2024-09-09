@@ -6,6 +6,7 @@ import ModalStylesMobile from "./ModalStyles-mobile";
 import ContactMethod from "./ContactMethod";
 import InputFields from "./InputFields";
 import PageSizeContext from "../../PageSizeContext";
+import ClockLoader from "react-spinners/ClockLoader";
 import { useUser } from "../../Auth/UserContext";
 import { ReminderProps } from "../../../props/ReminderProps";
 import { FaRegCircleCheck } from "react-icons/fa6";
@@ -170,9 +171,8 @@ const ReminderAddModal: React.FC<ReminderAddModalProps> = ({
         setTime={(time) => dispatch({ type: "SET_TIME", payload: time })}
       />
       {loading && (
-        <div className="loading-spinner">
-          <div className="spinner"></div>
-          <p>Submitting...</p>
+        <div className="">
+          <ClockLoader size={iconSize} />
         </div>
       )}
       <div className="reminder-add-modal-buttons">
