@@ -2,10 +2,11 @@ import React, { useEffect, useState } from "react";
 import ReminderAddButton from "./ReminderAddButton";
 import ReminderAddModal from "./Modal/ReminderAddModal";
 import ReminderList from "./List/ReminderList";
+import apiClient from "../Auth/apiClient";
+import Loader from "../Loader/Loader";
 import { ReminderProps } from "../../props/ReminderProps";
 
 import "./ReminderContent.css";
-import apiClient from "../Auth/apiClient";
 
 const ReminderContent = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -56,7 +57,9 @@ const ReminderContent = () => {
         onAddReminder={onAddReminder}
       />
       {loading ? (
-        <p>Loading...</p>
+        <div className="reminders-loader">
+          <Loader />
+        </div>
       ) : (
         <ReminderList
           reminders={reminders}
