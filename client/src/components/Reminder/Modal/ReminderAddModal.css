@@ -59,6 +59,12 @@
     .MuiInputBase-root.MuiOutlinedInput-root {
         font-size: 1.38rem;
     }
+
+    .MuiInputBase-input.MuiOutlinedInput-input {
+        text-align: center;
+    }
+
+
 }
 
 
