@@ -27,7 +27,7 @@
 
 }
 
-.SMS-disabled-note {
+.reminder-modal-error-message {
     color: red;
     font-weight: 600;
     font-size: 1.5rem;
@@ -45,6 +45,12 @@
 
 .react-datepicker__time-container {
     font-size: .8rem;
+}
+
+.ReactModal__Content {
+    .css-lxfshk-MuiInputBase-root-MuiOutlinedInput-root {
+        font-size: 1.45rem;
+    }
 }
 
 .reminder-add-modal-buttons {

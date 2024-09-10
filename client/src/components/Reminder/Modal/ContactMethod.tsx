@@ -39,12 +39,6 @@ const ContactMethod: React.FC<ContactMethodProps> = ({
         </label>
       </div>
     </div>
-    {!isSMSEnabled && (
-      <div className="SMS-disabled-note">
-        To enable text notifications, please verify Phone Number in the profile
-        tab.
-      </div>
-    )}
   </>
 );
 

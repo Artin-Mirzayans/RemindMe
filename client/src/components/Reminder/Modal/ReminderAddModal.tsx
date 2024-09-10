@@ -11,14 +11,13 @@ import { useUser } from "../../Auth/UserContext";
 import { ReminderProps } from "../../../props/ReminderProps";
 import { FaRegCircleCheck } from "react-icons/fa6";
 import { MdCancel } from "react-icons/md";
-import { format } from "date-fns";
 import { fromZonedTime } from "date-fns-tz";
 
 import "./ReminderAddModal.css";
 import "react-datepicker/dist/react-datepicker.css";
 
 interface ReminderAddModalProps {
-  reminders;
+  reminders: ReminderProps[];
   isOpen: boolean;
   onClose: () => void;
   onAddReminder: (reminder: ReminderProps) => void;
@@ -27,22 +26,19 @@ interface ReminderAddModalProps {
 interface State {
   description: string;
   contactMethod: "Email" | "Text";
-  date: Date | null;
-  time: Date | null;
+  dateTime: Date | null;
 }
 
 type Action =
   | { type: "SET_DESCRIPTION"; payload: string }
   | { type: "SET_CONTACT_METHOD"; payload: "Email" | "Text" }
-  | { type: "SET_DATE"; payload: Date | null }
-  | { type: "SET_TIME"; payload: Date | null }
+  | { type: "SET_DATETIME"; payload: Date | null }
   | { type: "RESET" };
 
 const initialState = (isVerified: boolean): State => ({
   description: "",
   contactMethod: isVerified ? "Text" : "Email",
-  date: null,
-  time: null,
+  dateTime: null,
 });
 
 const reducer = (state: State, action: Action): State => {
@@ -51,10 +47,8 @@ const reducer = (state: State, action: Action): State => {
       return { ...state, description: action.payload };
     case "SET_CONTACT_METHOD":
       return { ...state, contactMethod: action.payload };
-    case "SET_DATE":
-      return { ...state, date: action.payload };
-    case "SET_TIME":
-      return { ...state, time: action.payload };
+    case "SET_DATETIME":
+      return { ...state, dateTime: action.payload };
     case "RESET":
       return initialState(state.contactMethod === "Text");
     default:
@@ -70,6 +64,11 @@ const ReminderAddModal: React.FC<ReminderAddModalProps> = ({
 }) => {
   const { width } = useContext(PageSizeContext);
   const { user } = useUser();
+  const [errorMessage, setErrorMessage] = useState<string | null>(
+    user.isVerified
+      ? null
+      : "To enable text reminders, please verify Phone Number in the profile tab."
+  );
   const [state, dispatch] = useReducer(reducer, initialState(user.isVerified));
 
   const [loading, setLoading] = useState(false);
@@ -94,18 +93,21 @@ const ReminderAddModal: React.FC<ReminderAddModalProps> = ({
   };
 
   const handleAddReminder = async () => {
-    let dateTime: string;
+    setErrorMessage(null);
     const timeZone = Intl.DateTimeFormat().resolvedOptions().timeZone;
-    if (state.date && state.time) {
-      const localDateTime = new Date(
-        `${format(state.date, "yyyy-MM-dd")}T${format(state.time, "HH:mm:ss")}`
-      );
-      const utcDateTime = fromZonedTime(localDateTime, timeZone);
-      dateTime = utcDateTime.toISOString().split(".")[0] + "Z";
-    } else {
-      console.log("date/time invalid");
+
+    if (state.description.length < 3 || state.description.length > 20) {
+      setErrorMessage("Description must be between 3 and 20 characters long.");
       return;
     }
+
+    if (!state.dateTime) {
+      setErrorMessage("Selected Date/Time must be in the future");
+      return;
+    }
+
+    const utcDateTime = fromZonedTime(state.dateTime, timeZone);
+    const dateTime = utcDateTime.toISOString().split(".")[0] + "Z";
 
     const existingReminder = reminders.find(
       (reminder) =>
@@ -113,9 +115,12 @@ const ReminderAddModal: React.FC<ReminderAddModalProps> = ({
     );
 
     if (existingReminder) {
-      alert("A reminder with the same date/time has already been created");
+      setErrorMessage(
+        "A reminder with the same date/time has already been created"
+      );
       return;
     }
+
     const reminderData = {
       contactMethod: state.contactMethod,
       description: state.description,
@@ -131,9 +136,9 @@ const ReminderAddModal: React.FC<ReminderAddModalProps> = ({
       .catch((error) => {
         setLoading(false);
         console.error("Failed to create reminder:", error);
-        if (error.response?.status == 400)
+        if (error.response?.status === 400)
           alert(
-            "Description must be at least 3 characters\nDate/Time must be in future"
+            "Description must be at least 3 characters\nDate/Time must be in the future"
           );
         else {
           alert("Unknown Error");
@@ -144,10 +149,15 @@ const ReminderAddModal: React.FC<ReminderAddModalProps> = ({
     onClose();
   };
 
+  const handleCancel = () => {
+    dispatch({ type: "RESET" });
+    onClose();
+  };
+
   return (
     <Modal
       isOpen={isOpen}
-      onRequestClose={onClose}
+      onRequestClose={handleCancel}
       contentLabel="Add Reminder Modal"
       style={modalStyles}
       appElement={document.getElementById("root")}
@@ -160,15 +170,18 @@ const ReminderAddModal: React.FC<ReminderAddModalProps> = ({
         }
         isSMSEnabled={user.isVerified}
       />
+      {errorMessage && (
+        <div className="reminder-modal-error-message">{errorMessage}</div>
+      )}
       <InputFields
         description={state.description}
         setDescription={(desc) =>
           dispatch({ type: "SET_DESCRIPTION", payload: desc })
         }
-        date={state.date}
-        setDate={(date) => dispatch({ type: "SET_DATE", payload: date })}
-        time={state.time}
-        setTime={(time) => dispatch({ type: "SET_TIME", payload: time })}
+        dateTime={state.dateTime}
+        setDateTime={(dateTime) =>
+          dispatch({ type: "SET_DATETIME", payload: dateTime })
+        }
       />
       {loading && (
         <div className="">
@@ -176,7 +189,7 @@ const ReminderAddModal: React.FC<ReminderAddModalProps> = ({
         </div>
       )}
       <div className="reminder-add-modal-buttons">
-        <button onClick={onClose}>
+        <button onClick={handleCancel}>
           <MdCancel size={iconSize} />
         </button>
         <button onClick={handleAddReminder}>
