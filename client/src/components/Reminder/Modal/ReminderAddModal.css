@@ -49,14 +49,14 @@
         line-height: 1.4;
     }
     
-    .MuiFormControl-root.MuiTextField-root.css-z3c6am-MuiFormControl-root-MuiTextField-root {
+    .MuiFormControl-root.MuiTextField-root {
         font-weight: 500;
         background-color: whitesmoke;
         border: 1.4px solid black;
         border-radius: .6rem;
     }
     
-    .MuiInputBase-root.MuiOutlinedInput-root.css-lxfshk-MuiInputBase-root-MuiOutlinedInput-root {
+    .MuiInputBase-root.MuiOutlinedInput-root {
         font-size: 1.38rem;
     }
 }
