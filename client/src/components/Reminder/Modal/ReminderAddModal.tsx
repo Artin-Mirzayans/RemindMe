@@ -182,6 +182,9 @@ const ReminderAddModal: React.FC<ReminderAddModalProps> = ({
         setDateTime={(dateTime) =>
           dispatch({ type: "SET_DATETIME", payload: dateTime })
         }
+        contactMethod={state.contactMethod}
+        email={user.email}
+        phoneNumber={user.phoneNumber}
       />
       {loading && (
         <div className="">

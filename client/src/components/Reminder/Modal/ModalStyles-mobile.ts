@@ -8,8 +8,13 @@ const ModalStylesMobile = (width) => {
         modalHeight = '550px';
         modalGap = '1.6rem';
     }
+    else if (width > 500) {
+        modalHeight = '500px';
+        modalWidth = `${(width - 140).toString()}px`;
+        modalGap = '2.0rem';
+    }
     else if (width > 300) {
-        modalHeight = '450px';
+        modalHeight = '400px';
         modalWidth = `${(width - 140).toString()}px`;
         modalGap = '2.2rem';
     }

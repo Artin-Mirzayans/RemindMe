@@ -11,6 +11,9 @@ interface InputFieldsProps {
   setDescription: (value: string) => void;
   dateTime: Date | null;
   setDateTime: (dateTime: Date | null) => void;
+  contactMethod: "Email" | "Text";
+  email: string;
+  phoneNumber: string | null;
 }
 
 const InputFields: React.FC<InputFieldsProps> = ({
@@ -18,6 +21,9 @@ const InputFields: React.FC<InputFieldsProps> = ({
   setDescription,
   dateTime,
   setDateTime,
+  contactMethod,
+  email,
+  phoneNumber,
 }) => {
   const { width } = useContext(PageSizeContext);
 
@@ -27,27 +33,38 @@ const InputFields: React.FC<InputFieldsProps> = ({
   return (
     <>
       <LocalizationProvider dateAdapter={AdapterDayjs}>
-        <input
-          className="reminder-add-modal-input"
-          type="text"
-          value={description}
-          onChange={(e) => setDescription(e.target.value)}
-          placeholder="Description"
-          maxLength={20}
-        />
-        {width <= 600 ? (
-          <MobileDateTimePicker
-            value={dateTime == null ? dayjs() : dayjs(dateTime)}
-            onChange={handleDateChange}
-            minDateTime={dayjs()}
+        <div className="reminder-add-modal-inputs">
+          <input
+            aria-disabled
+            className="reminder-add-modal-input"
+            type="text"
+            readOnly
+            value={contactMethod == "Text" ? phoneNumber : email}
+            placeholder="Contact"
+            maxLength={20}
           />
-        ) : (
-          <DesktopDateTimePicker
-            value={dateTime == null ? dayjs() : dayjs(dateTime)}
-            onChange={handleDateChange}
-            minDateTime={dayjs()}
+          <input
+            className="reminder-add-modal-input"
+            type="text"
+            value={description}
+            onChange={(e) => setDescription(e.target.value)}
+            placeholder="Description"
+            maxLength={20}
           />
-        )}
+          {width <= 600 ? (
+            <MobileDateTimePicker
+              value={dateTime == null ? dayjs() : dayjs(dateTime)}
+              onChange={handleDateChange}
+              minDateTime={dayjs()}
+            />
+          ) : (
+            <DesktopDateTimePicker
+              value={dateTime == null ? dayjs() : dayjs(dateTime)}
+              onChange={handleDateChange}
+              minDateTime={dayjs()}
+            />
+          )}
+        </div>
       </LocalizationProvider>
     </>
   );

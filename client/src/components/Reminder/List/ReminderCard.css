@@ -30,3 +30,11 @@
         cursor: pointer;
     }
 }
+
+@media (min-width: 1400px) {
+    .reminder-card {
+        font-size: 1.7rem;
+        padding-left: 5rem;
+        padding-right: 4rem;
+    }
+ }

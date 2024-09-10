@@ -35,23 +35,32 @@
     
 }
 
-.reminder-add-modal-input {
-    padding: 1rem;
-    text-align: center;
-    font-size: 1.6rem;
-    border-radius: 6px;
-    border-color: #658352;
-}
+.reminder-add-modal-inputs {
+    display: flex;
+    flex-direction: column;
+    gap: 1.3rem;
 
-.react-datepicker__time-container {
-    font-size: .8rem;
-}
-
-.ReactModal__Content {
-    .css-lxfshk-MuiInputBase-root-MuiOutlinedInput-root {
-        font-size: 1.45rem;
+    .reminder-add-modal-input {
+        padding: 1rem;
+        text-align: center;
+        font-size: 1.6rem;
+        border-radius: 6px;
+        border-color: #658352;
+        line-height: 1.4;
+    }
+    
+    .MuiFormControl-root.MuiTextField-root.css-z3c6am-MuiFormControl-root-MuiTextField-root {
+        font-weight: 500;
+        background-color: whitesmoke;
+        border: 1.4px solid black;
+        border-radius: .6rem;
+    }
+    
+    .MuiInputBase-root.MuiOutlinedInput-root.css-lxfshk-MuiInputBase-root-MuiOutlinedInput-root {
+        font-size: 1.38rem;
     }
 }
+
 
 .reminder-add-modal-buttons {
     display: flex;
@@ -70,6 +79,7 @@
         font-weight: bold;
         flex: 0 0 auto;
         transition: all 0.18s ease-in;
+        margin-top: 1rem;
     }
 
     @media (max-width: 1070px) {
