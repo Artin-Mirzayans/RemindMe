@@ -2,7 +2,6 @@
 
 RemindMe is a web application that allows users to schedule reminders with different contact methods (Email/SMS). The app features a robust, scalable backend built with Spring Boot and leverages several AWS services. It provides a seamless user experience with a React-based frontend hosted on AWS.
 
-
 ## Features
 
 - Schedule reminders via Email or SMS.
@@ -32,4 +31,53 @@ The RemindMe app is a cloud-native application that integrates multiple AWS serv
 6. **Authentication:** Google OAuth is used for user authentication.
 7. **CI/CD:** Automated deployment using GitHub Actions for both the frontend and backend.
 
+## Architecture Diagram
+```mermaid
+graph TD
+    subgraph Frontend
+        S3[React App on S3]
+        CloudFront[CloudFront Distribution]
+        CloudFront --> S3
+    end
 
+    subgraph Backend
+        ALB[Application Load Balancer]
+        EC2[Spring App on EC2]
+        ALB --> EC2
+    end
+
+    subgraph Authentication
+        GoogleOAuth[Google OAuth]
+        S3 -->|User Login| GoogleOAuth
+        GoogleOAuth -->|Auth Token| S3
+    end
+
+    subgraph CI/CD
+        Github[GitHub Actions]
+        Github -->|Deploy Frontend| S3
+        Github -->|Deploy Backend| EC2
+    end
+
+    subgraph DataStore
+        DynamoDB
+        EC2 -->|Store/Fetch Data| DynamoDB
+    end
+
+    subgraph Scheduler
+        EventBridge[AWS EventBridge]
+        EC2 -->|Schedule Reminder| EventBridge
+    end
+
+    subgraph Notifications
+        Lambda[Lambda Functions]
+        SES[AWS SES]
+        Pinpoint[AWS Pinpoint]
+        EventBridge -->|Trigger Notification| Lambda
+        Lambda -->|Send Email| SES
+        Lambda -->|Send SMS| Pinpoint
+    end
+
+    S3 -->|API Requests| ALB
+    S3 -->|Verify Auth Token| EC2
+
+```
