@@ -79,3 +79,9 @@ jobs:
           S3_BUCKET: ${{ secrets.AWS_S3_BUCKET }}
         run: |
           aws s3 sync client/dist s3://$S3_BUCKET --delete
+
+      - name: Invalidate CloudFront cache
+        run: |
+          # bundle.js and main.css aren't content-hashed, so without this CloudFront keeps
+          # serving whatever it cached pre-deploy until each edge's TTL happens to expire
+          aws cloudfront create-invalidation --distribution-id E1LXFFBDIRVSJP --paths "/*"
