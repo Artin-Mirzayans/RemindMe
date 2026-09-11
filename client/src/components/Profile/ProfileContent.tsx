@@ -5,13 +5,15 @@ import renderVerificationStatusIcon from "./renderVerificationStatusIcon";
 import apiClient from "../Auth/apiClient";
 import PageSizeContext from "../PageSizeContext";
 import { useUser } from "../Auth/UserContext";
+import Loader from "../Loader/Loader";
+import SignInPrompt from "../Auth/SignInPrompt";
 
 import { IoOpenOutline } from "react-icons/io5";
 import "./ProfileContent.css";
 
 const ProfileContent: React.FC = () => {
   const { width } = useContext(PageSizeContext);
-  const { user } = useUser();
+  const { user, authLoading } = useUser();
   const [placeholder, setPlaceholder] = useState("(123) 456-7890");
   const [sms, setSms] = useState<string>(
     user?.phoneNumber ? formatPhoneNumber(user.phoneNumber) : ""
@@ -30,16 +32,27 @@ const ProfileContent: React.FC = () => {
     else return 22;
   }, [width]);
 
+  // user starts null and fills in async once UserContext validates the token, so the useState
+  // initializers above only ever see that first empty render - sync it once the real data arrives
+  useEffect(() => {
+    if (!user) return;
+    setSms(user.phoneNumber ? formatPhoneNumber(user.phoneNumber) : "");
+    setVerificationStatus(
+      user.isVerified ? "verified" : user.phoneNumber ? "pending" : "notVerified"
+    );
+  }, [user]);
+
   useEffect(() => {
     if (
       sms &&
       sms.length === 14 &&
-      user?.phoneNumber == null &&
+      user &&
+      user.phoneNumber == null &&
       !user.isVerified
     ) {
       sendCode(sms);
     }
-  }, [sms]);
+  }, [sms, user]);
 
   const handleSmsChange = (e) => {
     const formattedPhoneNumber = formatPhoneNumber(e.target.value);
@@ -86,6 +99,28 @@ const ProfileContent: React.FC = () => {
       });
   };
 
+  if (authLoading) {
+    return (
+      <div className="profile-content">
+        <div className="reminders-loader">
+          <Loader />
+        </div>
+      </div>
+    );
+  }
+
+  if (!user) {
+    return (
+      <div className="profile-content">
+        <div className="content-title">Profile</div>
+        <SignInPrompt
+          title="Sign in to manage your profile"
+          description="Verify your phone number and manage how RemindMe reaches you."
+        />
+      </div>
+    );
+  }
+
   return (
     <div className="profile-content">
       <div className="content-title">Profile</div>
@@ -96,7 +131,7 @@ const ProfileContent: React.FC = () => {
             Email:
           </label>
           <input
-            className="profile-content-input-field"
+            className="input"
             type="email"
             id="email"
             value={user.email}
@@ -110,7 +145,7 @@ const ProfileContent: React.FC = () => {
             Phone:
           </label>
           <input
-            className="profile-content-input-field"
+            className="input"
             type="text"
             id="sms"
             placeholder={placeholder}
@@ -132,7 +167,12 @@ const ProfileContent: React.FC = () => {
 
       {verificationStatus == "pending" && (
         <div className="profile-content-button">
-          <button onClick={openModal}>
+          <button
+            type="button"
+            className="btn btn--icon"
+            onClick={openModal}
+            aria-label="Enter your verification code"
+          >
             <IoOpenOutline size={iconSize} />
           </button>
         </div>

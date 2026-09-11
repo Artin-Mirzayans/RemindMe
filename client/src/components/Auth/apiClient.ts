@@ -33,40 +33,40 @@ apiClient.interceptors.response.use(
 
         // Check if the error status is 401 and we haven't already retried
         if (error.response?.status === 401 && !originalRequest._retry) {
-            originalRequest._retry = true; // Prevent infinite retry loop
-
             const refreshToken = localStorage.getItem('refresh_token');
-            if (refreshToken) {
-                try {
-                    // Use the refreshAccessToken helper function to get a new access token
-                    const newAccessToken = await refreshAccessToken(refreshToken);
 
-                    if (newAccessToken) {
-                        // Update the local storage and set the new access token
-                        localStorage.setItem('access_token', newAccessToken);
-
-                        // Update the original request's Authorization header with the new token
-                        originalRequest.headers.Authorization = `Bearer ${newAccessToken}`;
-
-                        try {
-                            // Retry the original request
-                            return await apiClient(originalRequest);
-                        } catch (retryError) {
-                            clearAuthTokens();
-                            window.location.href = '/login';
-                            return Promise.reject(retryError);
-                        }
-                    }
-                } catch (refreshError) {
-                    clearAuthTokens();
-                    window.location.href = '/login';
-                    return Promise.reject(refreshError);
-                }
+            // No refresh token means this was an anonymous request to a protected
+            // endpoint (expected for a signed-out visitor) - let the caller's own
+            // gating handle it instead of treating it as an expired session.
+            if (!refreshToken) {
+                return Promise.reject(error);
             }
 
-            // If the refresh fails or there's no refresh token, clear tokens and redirect
+            originalRequest._retry = true; // Prevent infinite retry loop
+
+            try {
+                // Use the refreshAccessToken helper function to get a new access token
+                const newAccessToken = await refreshAccessToken(refreshToken);
+
+                if (newAccessToken) {
+                    // Update the local storage and set the new access token
+                    localStorage.setItem('access_token', newAccessToken);
+
+                    // Update the original request's Authorization header with the new token
+                    originalRequest.headers.Authorization = `Bearer ${newAccessToken}`;
+
+                    // Retry the original request
+                    return await apiClient(originalRequest);
+                }
+            } catch {
+                // fall through to session cleanup below
+            }
+
+            // The session is dead - clear it and let UserContext know, rather than
+            // forcing a redirect. Whichever page is on screen re-renders into its
+            // own signed-out state.
             clearAuthTokens();
-            window.location.href = '/login';
+            window.dispatchEvent(new Event('auth:logout'));
         }
 
         return Promise.reject(error);

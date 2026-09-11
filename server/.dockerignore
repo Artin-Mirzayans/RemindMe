@@ -1,0 +1,10 @@
+target/
+.git/
+.gitignore
+HELP.md
+*.iml
+.idea/
+.vscode/
+.settings/
+.classpath
+.project

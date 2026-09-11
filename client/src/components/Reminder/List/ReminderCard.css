@@ -1,40 +1,122 @@
 .reminder-card {
-    display: flex;
-    flex-direction: row;
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto auto auto auto auto auto;
     align-items: center;
-    gap: 1.7rem;
-    padding: 0 1.8rem;
+    gap: var(--space-2);
 
-    .reminder-card-description {
-        flex-basis: 40%;
+    padding: var(--space-3) var(--space-4);
+
+    background: var(--color-surface);
+    border: 1.5px solid var(--color-line-soft);
+    border-radius: var(--radius-md);
+    box-shadow: var(--shadow-sm);
+
+    transition: box-shadow var(--transition), transform var(--transition);
+}
+
+.reminder-card:hover {
+    box-shadow: var(--shadow-md);
+    transform: translateY(-1px);
+}
+
+.reminder-card-description {
+    min-width: 0;
+    font-size: var(--text-lg);
+    font-weight: 600;
+    overflow-wrap: anywhere;
+}
+
+.reminder-card-when {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 0.1rem;
+
+    font-family: var(--font-ui);
+    white-space: nowrap;
+}
+
+.reminder-card-date {
+    font-size: var(--text-sm);
+    font-weight: 600;
+}
+
+.reminder-card-contact {
+    display: flex;
+    align-items: center;
+    font-size: var(--text-lg);
+    color: var(--color-primary);
+}
+
+.reminder-card-icon-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    min-width: 2.75rem;
+    min-height: 2.75rem;
+    padding: var(--space-1);
+    font-size: var(--text-lg);
+    color: var(--color-text-muted);
+
+    background: none;
+    border: none;
+    border-radius: var(--radius-sm);
+    cursor: pointer;
+
+    transition: color var(--transition), background var(--transition);
+}
+
+.reminder-card-icon-btn:hover {
+    color: var(--color-primary);
+    background: var(--color-surface-sunken);
+}
+
+.reminder-card-icon-btn:focus-visible {
+    outline: none;
+    box-shadow: var(--focus-ring);
+}
+
+/* The cancel (X) button is the one destructive action here, so its hover reads as a warning
+   rather than the same "this is interactive" green as edit/calendar. */
+.reminder-card-cancel:hover {
+    color: var(--color-danger);
+}
+
+.reminder-card-relative {
+    font-size: 0.95rem;
+    color: var(--color-text-muted);
+}
+
+.reminder-card--confirming {
+    grid-template-columns: minmax(0, 1fr) auto;
+    align-items: center;
+    border-color: var(--color-danger);
+}
+
+.reminder-card-confirm-actions {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: flex-end;
+    gap: var(--space-2);
+}
+
+/* A repeating reminder's confirm step has a third button ("all N in series") - past a certain
+   point that no longer fits next to the description, so stack it above full-width instead of
+   squeezing both into a cramped side-by-side row. */
+@media (max-width: 480px) {
+    .reminder-card--confirming {
+        grid-template-columns: 1fr;
     }
 
-    .reminder-card-date {
-        flex-basis: 20%
-    }
-
-    .reminder-card-time {
-        flex-basis: 25%;
-        white-space: nowrap;
-    }
-
-    .reminder-card-contact {
-        display: flex;
-        justify-content: center;
-        flex-basis: 10%;
-    }
-
-    .reminder-card-cancel {
-        display: flex;
-        justify-content: center;
-        cursor: pointer;
+    .reminder-card-confirm-actions {
+        justify-content: flex-start;
     }
 }
 
-@media (min-width: 1400px) {
-    .reminder-card {
-        font-size: 1.7rem;
-        padding-left: 5rem;
-        padding-right: 4rem;
-    }
- }
+.reminder-card-error {
+    grid-column: 1 / -1;
+    font-family: var(--font-ui);
+    font-size: 1rem;
+    color: var(--color-danger);
+}

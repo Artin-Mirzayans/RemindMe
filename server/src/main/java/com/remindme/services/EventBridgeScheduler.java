@@ -1,5 +1,7 @@
 package com.remindme.services;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 import software.amazon.awssdk.services.scheduler.SchedulerClient;
@@ -11,6 +13,8 @@ import com.target.TargetFactory;
 @Service
 public class EventBridgeScheduler {
 
+    private static final Logger log = LoggerFactory.getLogger(EventBridgeScheduler.class);
+
     private final SchedulerClient schedulerClient;
     private final TargetFactory targetFactory;
 
@@ -19,20 +23,24 @@ public class EventBridgeScheduler {
         this.targetFactory = targetFactory;
     }
 
+    static String scheduleName(String userId, String contactMethod, String dateTime) {
+        return userId.replaceFirst("@", "-") + "-" + contactMethod + "-" + dateTime.replace(":", ".");
+    }
+
     public boolean createSchedule(Reminder reminder, String userId) {
+        String contactMethod = reminder.getContactMethod();
+        String utcDateTime = reminder.getDateTime();
+        String name = scheduleName(userId, contactMethod, utcDateTime);
+
         try {
-            String contactMethod = reminder.getContactMethod();
             Target target = targetFactory.createLambdaTarget(contactMethod);
 
-            String utcDateTime = reminder.getDateTime();
-            String scheduleDateTime = utcDateTime.length() > 0 ? utcDateTime.substring(0, utcDateTime.length() - 1)
+            String scheduleDateTime = utcDateTime.endsWith("Z")
+                    ? utcDateTime.substring(0, utcDateTime.length() - 1)
                     : utcDateTime;
 
-            String sanitizedUserId = userId.replaceFirst("@", "-");
-            String scheduleName = sanitizedUserId + "-" + contactMethod + "-" + utcDateTime.replace(":", ".");
-
             CreateScheduleRequest createScheduleRequest = CreateScheduleRequest.builder()
-                    .name(scheduleName)
+                    .name(name)
                     .scheduleExpression("at(" + scheduleDateTime + ")")
                     .target(target)
                     .flexibleTimeWindow(FlexibleTimeWindow.builder()
@@ -45,28 +53,32 @@ public class EventBridgeScheduler {
 
             return response.sdkHttpResponse().isSuccessful();
 
-        } catch (SchedulerException e) {
-            System.err.println("EventBridge scheduler error" + e.getMessage());
+        } catch (ConflictException e) {
+            log.warn("Schedule {} already exists", name);
             return false;
         } catch (Exception e) {
-            System.out.println("An error occurred: " + e.getMessage());
+            log.error("Failed to create schedule {}", name, e);
             return false;
         }
     }
 
     public boolean deleteSchedule(String userId, String contactMethod, String dateTime) {
-        String scheduleName = userId.replaceFirst("@", "-") + "-" + contactMethod + "-" + dateTime.replace(":", ".");
+        String name = scheduleName(userId, contactMethod, dateTime);
+
         try {
             DeleteScheduleRequest deleteScheduleRequest = DeleteScheduleRequest.builder()
-                    .name(scheduleName)
+                    .name(name)
                     .groupName(contactMethod)
                     .build();
 
             schedulerClient.deleteSchedule(deleteScheduleRequest);
 
             return true;
-        } catch (SchedulerException e) {
-            System.out.println("Failed to delete schedule with ID " + scheduleName + ": " + e.getMessage());
+        } catch (ResourceNotFoundException e) {
+            log.info("Schedule {} already gone, treating delete as successful", name);
+            return true;
+        } catch (Exception e) {
+            log.error("Failed to delete schedule {}", name, e);
             return false;
         }
     }

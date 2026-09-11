@@ -5,6 +5,8 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.env.Environment;
 import org.springframework.http.HttpMethod;
@@ -20,6 +22,8 @@ import java.io.IOException;
 import java.time.Instant;
 
 public class TokenValidationFilter extends OncePerRequestFilter {
+
+    private static final Logger log = LoggerFactory.getLogger(TokenValidationFilter.class);
 
     private final Environment environment;
 
@@ -79,7 +83,7 @@ public class TokenValidationFilter extends OncePerRequestFilter {
 
             return true;
         } catch (Exception e) {
-            e.printStackTrace();
+            log.warn("Token validation failed: {}", e.getMessage());
             return false;
         }
     }

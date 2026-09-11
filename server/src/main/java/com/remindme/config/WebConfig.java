@@ -38,7 +38,7 @@ public class WebConfig {
     FilterRegistrationBean<TokenValidationFilter> tokenValidationFilterRegistration(Environment environment) {
         FilterRegistrationBean<TokenValidationFilter> registration = new FilterRegistrationBean<>();
         registration.setFilter(new TokenValidationFilter(environment));
-        registration.addUrlPatterns("/reminders/*", "/users/*", "/otp/*");
+        registration.addUrlPatterns("/reminders/*", "/users/*", "/otp/*", "/watchlist/*");
         registration.setOrder(2);
         return registration;
     }

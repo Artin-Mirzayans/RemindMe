@@ -1,0 +1,67 @@
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Sid": "DynamoTables",
+      "Effect": "Allow",
+      "Action": [
+        "dynamodb:GetItem",
+        "dynamodb:BatchGetItem",
+        "dynamodb:PutItem",
+        "dynamodb:UpdateItem",
+        "dynamodb:DeleteItem",
+        "dynamodb:BatchWriteItem",
+        "dynamodb:Query",
+        "dynamodb:Scan"
+      ],
+      "Resource": [
+        "arn:aws:dynamodb:us-west-1:891377299679:table/Reminders",
+        "arn:aws:dynamodb:us-west-1:891377299679:table/Reminders/index/*",
+        "arn:aws:dynamodb:us-west-1:891377299679:table/Users",
+        "arn:aws:dynamodb:us-west-1:891377299679:table/Users/index/*",
+        "arn:aws:dynamodb:us-west-1:891377299679:table/WatchlistInterests",
+        "arn:aws:dynamodb:us-west-1:891377299679:table/WatchlistInterests/index/*",
+        "arn:aws:dynamodb:us-west-1:891377299679:table/FeedCache"
+      ]
+    },
+    {
+      "Sid": "EventBridgeSchedulerManageSchedules",
+      "Effect": "Allow",
+      "Action": [
+        "scheduler:CreateSchedule",
+        "scheduler:DeleteSchedule",
+        "scheduler:GetSchedule",
+        "scheduler:UpdateSchedule",
+        "scheduler:ListSchedules"
+      ],
+      "Resource": "arn:aws:scheduler:us-west-1:891377299679:schedule/*/*"
+    },
+    {
+      "Sid": "PassEventBridgeExecutionRoleToScheduler",
+      "Effect": "Allow",
+      "Action": "iam:PassRole",
+      "Resource": "arn:aws:iam::891377299679:role/RemindMe-EventBridgeExecutionRole",
+      "Condition": {
+        "StringEquals": { "iam:PassedToService": "scheduler.amazonaws.com" }
+      }
+    },
+    {
+      "Sid": "SendOtpSms",
+      "Effect": "Allow",
+      "Action": "sms-voice:SendTextMessage",
+      "Resource": "*"
+    },
+    {
+      "Sid": "ReadAppSecretsFromParameterStore",
+      "Effect": "Allow",
+      "Action": "ssm:GetParameters",
+      "Resource": "arn:aws:ssm:us-west-2:891377299679:parameter/remindme/*"
+    },
+    {
+      "Sid": "DecryptParameterStoreSecureStrings",
+      "Effect": "Allow",
+      "Action": "kms:Decrypt",
+      "Resource": "arn:aws:kms:us-west-2:891377299679:key/02c938b7-9630-4fbf-ab2e-ad9e2083bc0f"
+    }
+  ]
+}

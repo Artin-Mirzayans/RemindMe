@@ -1,0 +1,39 @@
+{
+  "ServiceName": "remindme-api",
+  "SourceConfiguration": {
+    "AuthenticationConfiguration": {
+      "AccessRoleArn": "arn:aws:iam::891377299679:role/RemindMe-AppRunner-ECRAccessRole"
+    },
+    "AutoDeploymentsEnabled": true,
+    "ImageRepository": {
+      "ImageIdentifier": "891377299679.dkr.ecr.us-west-2.amazonaws.com/remindme-api:latest",
+      "ImageRepositoryType": "ECR",
+      "ImageConfiguration": {
+        "Port": "8080",
+        "RuntimeEnvironmentVariables": {
+          "SPRING_PROFILES_ACTIVE": "prod"
+        },
+        "RuntimeEnvironmentSecrets": {
+          "OAUTH_CLIENT_SECRET": "arn:aws:ssm:us-west-2:891377299679:parameter/remindme/oauth-client-secret",
+          "ANTHROPIC_API_KEY": "arn:aws:ssm:us-west-2:891377299679:parameter/remindme/anthropic-api-key",
+          "TAVILY_API_KEY": "arn:aws:ssm:us-west-2:891377299679:parameter/remindme/tavily-api-key",
+          "TICKETMASTER_API_KEY": "arn:aws:ssm:us-west-2:891377299679:parameter/remindme/ticketmaster-api-key"
+        }
+      }
+    }
+  },
+  "InstanceConfiguration": {
+    "Cpu": "0.5 vCPU",
+    "Memory": "1 GB",
+    "InstanceRoleArn": "arn:aws:iam::891377299679:role/RemindMe-AppRunner-InstanceRole"
+  },
+  "HealthCheckConfiguration": {
+    "Protocol": "HTTP",
+    "Path": "/actuator/health",
+    "Interval": 10,
+    "Timeout": 5,
+    "HealthyThreshold": 1,
+    "UnhealthyThreshold": 5
+  },
+  "Tags": [{ "Key": "project", "Value": "remindme" }]
+}

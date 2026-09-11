@@ -8,19 +8,36 @@ import "./ReminderList.css";
 interface ReminderListProps {
   reminders: ReminderProps[] | null;
   onDeleteReminder: (index: number) => void;
+  onEditReminder: (reminder: ReminderProps) => void;
+  onDeleteSeries: (seriesId: string) => void;
 }
 
 const ReminderList: React.FC<ReminderListProps> = ({
   reminders,
   onDeleteReminder,
+  onEditReminder,
+  onDeleteSeries,
 }) => {
+  const seriesCounts = (reminders ?? []).reduce<Record<string, number>>(
+    (counts, reminder) => {
+      if (reminder.seriesId) {
+        counts[reminder.seriesId] = (counts[reminder.seriesId] ?? 0) + 1;
+      }
+      return counts;
+    },
+    {}
+  );
+
   return (
     <div className="reminder-list">
       {!reminders || reminders?.length === 0 ? (
         <div className="reminder-list-empty">
-          <div>Create a reminder!</div>
+          <FcAlarmClock size={72} aria-hidden="true" />
           <div>
-            <FcAlarmClock size={80} />
+            <p className="reminder-list-empty-title">No reminders yet</p>
+            <p className="reminder-list-empty-text">
+              Add one and we&apos;ll text or email you when the time comes.
+            </p>
           </div>
         </div>
       ) : (
@@ -29,7 +46,10 @@ const ReminderList: React.FC<ReminderListProps> = ({
             key={index}
             index={index}
             reminder={reminder}
+            seriesCount={reminder.seriesId ? seriesCounts[reminder.seriesId] : 0}
             onDeleteReminder={onDeleteReminder}
+            onEditReminder={onEditReminder}
+            onDeleteSeries={onDeleteSeries}
           />
         ))
       )}

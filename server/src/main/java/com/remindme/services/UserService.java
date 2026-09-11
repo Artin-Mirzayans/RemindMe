@@ -2,12 +2,16 @@ package com.remindme.services;
 
 import com.remindme.models.User;
 import com.remindme.repositories.UserRepository;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 import java.util.Map;
 
 @Service
 public class UserService {
+
+    private static final Logger log = LoggerFactory.getLogger(UserService.class);
 
     private final UserRepository userRepository;
 
@@ -24,7 +28,7 @@ public class UserService {
                 return null;
             }
         } catch (Exception e) {
-            e.printStackTrace();
+            log.error("Failed to load user {}", userId, e);
             throw new RuntimeException("Error retrieving user data");
         }
     }

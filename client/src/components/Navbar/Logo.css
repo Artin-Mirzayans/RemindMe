@@ -1,5 +1,11 @@
 .logo {
     display: flex;
     justify-content: center;
-    height:5rem;
+    height: 5rem;
+}
+
+.logo img {
+    height: 100%;
+    width: auto;
+    object-fit: contain;
 }

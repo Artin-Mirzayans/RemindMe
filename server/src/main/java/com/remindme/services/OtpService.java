@@ -3,12 +3,16 @@ package com.remindme.services;
 import software.amazon.awssdk.services.pinpointsmsvoicev2.PinpointSmsVoiceV2Client;
 import software.amazon.awssdk.services.pinpointsmsvoicev2.model.SendTextMessageRequest;
 import org.springframework.beans.factory.annotation.Value;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import com.remindme.models.User;
 import com.remindme.repositories.UserRepository;
 
 @Service
 public class OtpService {
+
+    private static final Logger log = LoggerFactory.getLogger(OtpService.class);
 
     private final PinpointSmsVoiceV2Client pinpointSmsVoiceV2Client;
     private final UserRepository userRepository;
@@ -42,7 +46,7 @@ public class OtpService {
             pinpointSmsVoiceV2Client.sendTextMessage(request);
             return true;
         } catch (Exception e) {
-            e.printStackTrace();
+            log.error("Failed to send OTP message", e);
             return false;
         }
     }

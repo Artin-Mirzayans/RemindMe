@@ -1,8 +1,8 @@
 .auth-loader {
-    height: 100%;
     display: flex;
     justify-content: center;
     align-items: center;
+    height: 100%;
 }
 
 .reminders-loader {
@@ -10,5 +10,5 @@
     justify-content: center;
     align-items: center;
     flex-grow: 1;
-    margin-bottom: 5rem;
+    margin-bottom: var(--space-6);
 }

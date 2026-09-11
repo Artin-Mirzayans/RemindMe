@@ -1,50 +1,35 @@
 .content {
     display: flex;
     justify-content: center;
-    width: 50%;
-    margin: 5rem auto 2rem;
+
+    width: min(94vw, 900px);
     min-height: 600px;
-    border-radius: 2rem;
-    border: .3rem solid #658352;
+    margin: var(--space-6) auto var(--space-5);
+
+    background: var(--color-surface);
+    border: 2.5px solid var(--color-primary);
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-md);
     overflow: hidden;
-    
-    .content-title {
-        font-size: 4rem;
-        color: #658352;
-    }
+
+    transition: opacity var(--transition);
 }
 
 .content.dimmed {
-    opacity: .18;
+    opacity: 0.18;
 }
-
 
 @media (max-height: 650px) {
     .content {
-        margin: 1rem auto 2rem;
-    }
-}
-
-@media (max-width: 850px) {
-    .content {
-        width: 65%;
+        margin-top: var(--space-3);
     }
 }
 
 @media (max-width: 600px) {
     .content {
-        width: 85%;
-    }
-}
-
-@media (max-width: 480px) {
-    .content {
-        width: 92%;
-    }
-}
-
-@media (max-width: 380px) {
-    .content {
-        width: 96%;
+        /* Full 600px reserves near a whole phone screen, which looks broken under short
+           content (a sign-in gate, an empty state) - just enough to hold a loading spinner
+           without the box visibly collapsing before content arrives. */
+        min-height: 320px;
     }
 }

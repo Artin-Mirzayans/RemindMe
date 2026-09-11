@@ -1,0 +1,36 @@
+.rating-filter-bar {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-2);
+    margin-bottom: var(--space-2);
+}
+
+.rating-filter-btn {
+    min-height: 2.5rem;
+    padding: var(--space-1) var(--space-3);
+
+    font-family: var(--font-ui);
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: var(--color-text-muted);
+
+    background: var(--color-surface-sunken);
+    border: 1.5px solid transparent;
+    border-radius: var(--radius-pill);
+    cursor: pointer;
+    transition: color var(--transition), border-color var(--transition);
+}
+
+.rating-filter-btn:hover {
+    color: var(--color-text);
+}
+
+.rating-filter-btn.active {
+    color: var(--color-primary);
+    border-color: var(--color-primary);
+}
+
+.rating-filter-stars {
+    color: var(--color-accent);
+    letter-spacing: 1px;
+}

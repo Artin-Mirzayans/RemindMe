@@ -9,6 +9,10 @@ on:
       - "*" # Allows triggering deploy on pull request if needed
   workflow_dispatch: # Manual trigger for deployment
 
+env:
+  AWS_REGION: us-west-2
+  ECR_REPOSITORY: remindme-api
+
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -20,11 +24,6 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Change to server directory
-        run: |
-          cd server
-          echo "Changed directory to $(pwd)"
-
       - name: Set up JDK 17
         uses: actions/setup-java@v3
         with:
@@ -32,59 +31,40 @@ jobs:
           distribution: "temurin"
           cache: maven
 
-      - name: Build with Maven
+      - name: Build and test with Maven
         run: |
           cd server
           mvn -B package --file pom.xml
-
-      - name: Run Tests with Maven
-        run: |
-          cd server 
-          mvn -B test --file pom.xml
 
   deploy:
     runs-on: ubuntu-latest
     needs: build
     if: github.ref == 'refs/heads/master' || github.event_name == 'workflow_dispatch'
 
-    env:
-      AWS_INSTANCE_SG_ID: ${{ secrets.AWS_INSTANCE_SG_ID }}
+    concurrency:
+      group: deploy-remindme-api
+      cancel-in-progress: false
 
     steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
       - name: Configure AWS credentials
-        uses: aws-actions/configure-aws-credentials@v1
+        uses: aws-actions/configure-aws-credentials@v4
         with:
-          aws-access-key-id: ${{ secrets.AWS_EC2_ACCESS_KEY_ID }}
-          aws-secret-access-key: ${{ secrets.AWS_EC2_SECRET_ACCESS_KEY }}
-          aws-region: us-west-1
+          aws-access-key-id: ${{ secrets.AWS_ECR_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_ECR_SECRET_ACCESS_KEY }}
+          aws-region: ${{ env.AWS_REGION }}
 
-      - name: Get runner IP address
-        id: ip
-        uses: haythem/public-ip@v1.2
+      - name: Log in to Amazon ECR
+        id: ecr
+        uses: aws-actions/amazon-ecr-login@v2
 
-      - name: Setup SSH
-        uses: webfactory/ssh-agent@v0.9.0
-        with:
-          ssh-private-key: ${{ secrets.AWS_EC2_SSH_PRIVATE_KEY }}
-
-      - name: Whitelist runner IP address
+      - name: Build, tag, and push image
+        env:
+          REGISTRY: ${{ steps.ecr.outputs.registry }}
         run: |
-          aws ec2 authorize-security-group-ingress \
-            --group-id $AWS_INSTANCE_SG_ID \
-            --protocol tcp \
-            --port 22 \
-            --cidr ${{ steps.ip.outputs.ipv4 }}/32
-
-      - name: SSH into EC2 & Deploy
-        run: |
-          ssh -o StrictHostKeyChecking=no ubuntu@ec2-54-151-20-245.us-west-1.compute.amazonaws.com "sudo systemctl restart remindme"
-
-
-      - name: Revoke runner IP address
-        if: always()
-        run: |
-          aws ec2 revoke-security-group-ingress \
-            --group-id ${{ secrets.AWS_INSTANCE_SG_ID }} \
-            --protocol tcp \
-            --port 22 \
-            --cidr ${{ steps.ip.outputs.ipv4 }}/32
+          docker build -t "$REGISTRY/$ECR_REPOSITORY:$GITHUB_SHA" -t "$REGISTRY/$ECR_REPOSITORY:latest" server
+          docker push "$REGISTRY/$ECR_REPOSITORY:$GITHUB_SHA"
+          docker push "$REGISTRY/$ECR_REPOSITORY:latest"
+          # App Runner is configured with auto-deploy on :latest, so the push above triggers the rollout.

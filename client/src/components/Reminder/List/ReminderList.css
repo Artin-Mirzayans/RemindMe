@@ -1,40 +1,35 @@
 .reminder-list {
     display: flex;
     flex-direction: column;
-    gap: 1.6rem;
-    font-size: 1.6rem;
+    gap: var(--space-3);
+
     width: 100%;
-
-    .reminder-list-empty {
-        display: flex;
-        flex-direction: column;
-        justify-content: center;
-        align-items: center;
-        gap: 2rem;
-        font-size: 2.5rem;
-        padding-left: 1.5rem;
-        padding-right: 1.5rem;
-
-    }
+    padding: 0 var(--space-4);
 }
 
+.reminder-list-empty {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    gap: var(--space-4);
 
-@media (max-height: 700px) {
-    .reminder-list {
-        padding-top: 4rem;
-        gap : 2.2rem;
-    }
- }
+    padding: var(--space-7) var(--space-4);
+    font-size: var(--text-xl);
+    color: var(--color-text-muted);
+    text-align: center;
+}
 
- @media (max-height: 900px) {
-    .reminder-list {
-        padding-top: 2rem;
-        gap : 1.6rem;
-    }
- }
+.reminder-list-empty-title {
+    margin: 0 0 var(--space-1);
+    font-size: var(--text-xl);
+    font-weight: 600;
+    color: var(--color-text);
+}
 
- @media (max-width: 300px) {
-    .reminder-list {
-        font-size: 1.2rem
-    }
- }
+.reminder-list-empty-text {
+    margin: 0;
+    font-size: var(--text-base);
+    line-height: 1.5;
+    color: var(--color-text-muted);
+}

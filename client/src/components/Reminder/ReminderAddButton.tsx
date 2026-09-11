@@ -3,6 +3,8 @@ import { IoCreateSharp } from "react-icons/io5";
 
 import "./ReminderAddButton.css";
 
+const MAX_REMINDERS = 15;
+
 interface ReminderAddButtonProps {
   remindersCount: number;
   openModal: () => void;
@@ -12,20 +14,25 @@ const ReminderAddButton: React.FC<ReminderAddButtonProps> = ({
   remindersCount,
   openModal,
 }) => {
-  const handleMaxReminders = () => {
-    if (remindersCount >= 15) {
-      alert("Max Reminder Amount: 15\nContact support for rate increase.");
-    } else {
-      openModal();
-    }
-  };
+  const atLimit = remindersCount >= MAX_REMINDERS;
+
   return (
     <div className="reminder-add-button">
-      <button onClick={handleMaxReminders}>
-        <span>
-          <IoCreateSharp size={44} />
-        </span>
+      <button
+        type="button"
+        className="btn btn--icon"
+        onClick={openModal}
+        disabled={atLimit}
+        aria-label="Add a reminder"
+      >
+        <IoCreateSharp size={32} />
       </button>
+      {atLimit && (
+        <p className="reminder-add-button-limit">
+          You&apos;ve reached the {MAX_REMINDERS} reminder limit. Cancel one to
+          add another.
+        </p>
+      )}
     </div>
   );
 };

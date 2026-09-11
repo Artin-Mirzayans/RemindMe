@@ -67,37 +67,42 @@ const SMSModal: React.FC<SMSModalProps> = ({
       isOpen={isOpen}
       onRequestClose={onRequestClose}
       contentLabel="Send SMS"
-      className="modal"
-      overlayClassName="modal-overlay"
+      className="sms-modal"
+      overlayClassName="sms-modal-overlay"
     >
-      <div className="SMSModal">
-        <h2 className="SMSModal-title">Verify Your Phone Number</h2>
-        <div className="SMSModal-content">
-          <input
-            className="SMSModal-sms-input"
-            type="text"
-            placeholder={sms}
-            value={sms}
-            readOnly
-          />
-        </div>
-        <div className="SMSModal-instructions">
+      <div className="sms-modal-body">
+        <h2 className="sms-modal-title">Verify Your Phone Number</h2>
+        <input
+          className="input sms-modal-phone"
+          type="text"
+          aria-label="Phone number being verified"
+          placeholder={sms}
+          value={sms}
+          readOnly
+        />
+        <div className="sms-modal-instructions">
           Enter the code we sent to your phone to complete the verification
           process
         </div>
-        <div className="SMSModal-content">
-          <input
-            pattern="\d*"
-            maxLength={6}
-            placeholder="code"
-            className="SMSModal-input"
-            value={otpCode}
-            onChange={handleOtpChange}
-          />
-        </div>
-        {errorMessage && <div className="SMSModal-error">{errorMessage}</div>}
-        <button className="SMSModal-resend-button" onClick={handleResendClick}>
+        <input
+          autoComplete="one-time-code"
+          inputMode="numeric"
+          pattern="\d*"
+          maxLength={6}
+          placeholder="000000"
+          aria-label="Six-digit verification code"
+          className="input sms-modal-code"
+          value={otpCode}
+          onChange={handleOtpChange}
+        />
+        {errorMessage && <div className="form-error">{errorMessage}</div>}
+        <button
+          type="button"
+          className="btn btn--ghost"
+          onClick={handleResendClick}
+        >
           <VscDebugRestart size={iconSize} />
+          Resend
         </button>
       </div>
     </Modal>

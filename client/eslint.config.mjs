@@ -12,4 +12,13 @@ export default [
   pluginJs.configs.recommended,
   ...tseslint.configs.recommended,
   pluginReact.configs.flat.recommended,
+  {
+    files: ["jest.config.js", "jest.setup.js", "__mocks__/**/*.js"],
+    languageOptions: { globals: globals.node, sourceType: "commonjs" },
+    rules: { "@typescript-eslint/no-require-imports": "off" },
+  },
+  {
+    files: ["**/*.test.{ts,tsx,js,jsx}"],
+    languageOptions: { globals: { ...globals.jest } },
+  },
 ];

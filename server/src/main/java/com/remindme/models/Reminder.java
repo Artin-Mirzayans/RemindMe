@@ -12,7 +12,6 @@ import com.exception.FutureDateTime;
 
 public class Reminder {
 
-    @NotNull(message = "UserId cannot be null")
     private String userId;
 
     @NotNull(message = "DateTime cannot be null")
@@ -22,12 +21,19 @@ public class Reminder {
 
     @NotNull(message = "Description cannot be null")
     @Size(min = 3, message = "Description must be at least 3 characters long")
-    @Size(max = 20, message = "Description must be at most 20 characters long")
+    @Size(max = 40, message = "Description must be at most 40 characters long")
     private String description;
 
     @NotNull(message = "ContactMethod cannot be null")
     @Pattern(regexp = "^(Email|Text)$", message = "ContactMethod must be 'Email' or 'Text'")
     private String contactMethod;
+
+    // groups the occurrences of a recurring reminder so the whole series can be cancelled at
+    // once; null for a standalone reminder, stamped by ReminderService when it's part of a series
+    private String seriesId;
+
+    public Reminder() {
+    }
 
     public Reminder(String userId, String dateTime, String contactMethod, String description) {
         this.userId = userId;
@@ -68,6 +74,14 @@ public class Reminder {
         this.contactMethod = contactMethod;
     }
 
+    public String getSeriesId() {
+        return seriesId;
+    }
+
+    public void setSeriesId(String seriesId) {
+        this.seriesId = seriesId;
+    }
+
     private Long getTTL() {
         OffsetDateTime odt = OffsetDateTime.parse(this.dateTime);
         long epoch = odt.toEpochSecond();
@@ -82,6 +96,9 @@ public class Reminder {
         item.put("Description", AttributeValue.builder().s(description).build());
         item.put("ContactMethod", AttributeValue.builder().s(contactMethod).build());
         item.put("TTL", AttributeValue.builder().n(Long.toString(getTTL())).build());
+        if (seriesId != null) {
+            item.put("SeriesId", AttributeValue.builder().s(seriesId).build());
+        }
         return item;
     }
 }

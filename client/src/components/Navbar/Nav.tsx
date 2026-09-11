@@ -5,6 +5,7 @@ import useElementHeight from "./useElementHeight";
 import MobileNav from "./MobileNav";
 import DesktopNav from "./DesktopNav";
 import { clearAuthTokens } from "../Auth/authUtils";
+import { useUser } from "../Auth/UserContext";
 
 const Nav: React.FC = () => {
   const { width } = useContext(PageSizeContext);
@@ -12,6 +13,7 @@ const Nav: React.FC = () => {
   const isMobile = width <= 1070;
   const [isOpen, setIsOpen] = useState(false);
   const navigate = useNavigate();
+  const { setUser } = useUser();
 
   const toggleMenu = () => {
     setIsOpen(!isOpen);
@@ -20,7 +22,8 @@ const Nav: React.FC = () => {
 
   const handleLogout = () => {
     clearAuthTokens();
-    navigate("/login");
+    setUser(null);
+    navigate("/");
   };
 
   return (

@@ -1,133 +1,255 @@
 .reminder-add-modal-title {
-    font-size: 2.4rem;
-    font-weight: 800;
-    color: #658352;
-    margin-top: -3rem;
+    font-size: var(--text-2xl);
+    font-weight: 700;
+    color: var(--color-primary);
 }
 
 .reminder-add-modal-contact {
     display: flex;
-    gap: 1.5rem;
-
-    .reminder-add-modal-contact-method {
-        display: flex;
-        flex-direction: column-reverse;
-        gap: .4rem;
-    }
-
-    .reminder-add-modal-contact-icon {
-        font-size: 4rem;
-        color: #658352;
-    }
-
-    input {
-        transform: scale(1.7);
-        accent-color: black;
-    }
-
+    gap: var(--space-4);
 }
 
-.reminder-modal-error-message {
-    color: red;
-    font-weight: 600;
-    font-size: 1.5rem;
-    text-align: center;
-    
+.reminder-add-modal-contact-method {
+    display: flex;
+    flex-direction: column-reverse;
+    align-items: center;
+    gap: var(--space-2);
+}
+
+.reminder-add-modal-contact-method input {
+    accent-color: var(--color-primary);
+    transform: scale(1.5);
+    cursor: pointer;
+}
+
+.reminder-add-modal-contact-method input:disabled {
+    cursor: not-allowed;
+}
+
+.reminder-add-modal-contact-method
+    input:disabled
+    + label
+    .reminder-add-modal-contact-icon {
+    color: var(--color-text-muted);
+    opacity: 0.4;
+}
+
+.reminder-add-modal-contact-icon {
+    display: block;
+    font-size: var(--text-3xl);
+    color: var(--color-primary);
 }
 
 .reminder-add-modal-inputs {
     display: flex;
     flex-direction: column;
-    gap: 1.3rem;
-
-    .reminder-add-modal-input {
-        padding: 1rem;
-        text-align: center;
-        font-size: 1.6rem;
-        border-radius: 6px;
-        border-color: #658352;
-        line-height: 1.4;
-    }
-    
-    .MuiFormControl-root.MuiTextField-root {
-        font-weight: 500;
-        background-color: whitesmoke;
-        border: 1.4px solid black;
-        border-radius: .6rem;
-    }
-    
-    .MuiInputBase-root.MuiOutlinedInput-root {
-        font-size: 1.38rem;
-    }
-
-    .MuiInputBase-input.MuiOutlinedInput-input {
-        text-align: center;
-    }
-
-
+    gap: var(--space-3);
+    width: min(100%, 32rem);
 }
 
+.reminder-add-modal-inputs .MuiFormControl-root.MuiTextField-root {
+    background-color: var(--color-surface);
+    border-radius: var(--radius-md);
+}
+
+.reminder-add-modal-inputs .MuiInputBase-root.MuiOutlinedInput-root {
+    font-family: var(--font-ui);
+    font-size: var(--text-sm);
+    border-radius: var(--radius-md);
+}
+
+.reminder-add-modal-inputs .MuiOutlinedInput-notchedOutline {
+    border-color: var(--color-line-soft);
+    border-width: 1.5px;
+}
+
+.reminder-add-modal-inputs
+    .MuiOutlinedInput-root:hover
+    .MuiOutlinedInput-notchedOutline,
+.reminder-add-modal-inputs
+    .MuiOutlinedInput-root.Mui-focused
+    .MuiOutlinedInput-notchedOutline {
+    border-color: var(--color-primary);
+}
+
+.reminder-add-modal-inputs .MuiInputBase-input.MuiOutlinedInput-input {
+    text-align: left;
+    letter-spacing: 0.01em;
+}
+
+.reminder-add-modal-inputs .MuiPickersSectionList-root {
+    justify-content: flex-start;
+}
 
 .reminder-add-modal-buttons {
     display: flex;
-    gap: 1.2rem;
-    button {
-        font-family: 'Noto Sans', sans-serif;
-        cursor: pointer;
-        box-shadow: -1px 3px 3px 0 rgba(80, 80, 80, .2);
-        width: 115px;
-        line-height: 1rem;
-        padding: .7rem;
-        border: none;
-        border-radius: 2rem;
-        background: #658352;
-        color: #fff;
-        font-weight: bold;
-        flex: 0 0 auto;
-        transition: all 0.18s ease-in;
-        margin-top: 1rem;
-    }
-
-    @media (max-width: 1070px) {
-        button {
-            width: 100px;
-        }
-    }
-
-    @media (max-width: 500px) {
-        button {
-            width: 86px;
-        }
-    }
-
-
-    button:hover {
-        background: #0f1a08;
-        box-shadow: 0 0 0 1px rgba(80, 80, 80, .5);
-      }
+    gap: var(--space-3);
+    margin-top: var(--space-2);
 }
 
-
-@media (max-width: 300px) {
-   .reminder-add-modal {
-       font-size: 9px;
-   }
+.reminder-add-modal-loading {
+    display: flex;
+    justify-content: center;
 }
 
-@media (max-width: 460px) {
-    .react-datepicker__time-container {
-        font-size: 1.8rem;
-    }
-    .react-datepicker__month-container {
-        font-size: 1.8rem;
-    }
+.reminder-modal-overlay {
+    position: fixed;
+    inset: 0;
+    z-index: 1000;
+
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: var(--space-4);
+
+    background: rgba(42, 30, 16, 0.45);
+    backdrop-filter: blur(2px);
 }
 
-@media (max-width: 1045px) {
-    .react-datepicker__time-container {
-        font-size: 1.3rem;
-    }
-    .react-datepicker__month-container {
-        font-size: 1.3rem;
-    }
+.reminder-modal {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: var(--space-4);
+
+    width: min(100%, 560px);
+    max-height: 90vh;
+    padding: var(--space-6) var(--space-5);
+    overflow-y: auto;
+
+    background-color: var(--color-bg);
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-lg);
+    outline: none;
+}
+
+.reminder-add-modal-contact-method label {
+    display: flex;
+    cursor: pointer;
+}
+
+.reminder-field {
+    position: relative;
+}
+
+.reminder-field-hint {
+    position: absolute;
+    right: var(--space-3);
+    bottom: 50%;
+    transform: translateY(50%);
+
+    font-family: var(--font-ui);
+    font-size: 0.95rem;
+    color: var(--color-text-muted);
+    pointer-events: none;
+}
+
+.reminder-presets {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: var(--space-2);
+}
+
+.reminder-preset {
+    padding: var(--space-2) var(--space-3);
+
+    font-family: var(--font-ui);
+    font-size: 1rem;
+    font-weight: 600;
+    color: var(--color-primary);
+    white-space: nowrap;
+
+    background: var(--color-surface);
+    border: 1.5px solid var(--color-line-soft);
+    border-radius: var(--radius-pill);
+    cursor: pointer;
+
+    transition: background var(--transition), border-color var(--transition),
+        color var(--transition);
+}
+
+.reminder-preset:hover {
+    border-color: var(--color-primary);
+    background: var(--color-surface-sunken);
+}
+
+.reminder-preset[aria-pressed="true"] {
+    color: var(--color-text-inverse);
+    background: var(--color-primary);
+    border-color: var(--color-primary);
+}
+
+.reminder-preset:focus-visible {
+    outline: none;
+    box-shadow: var(--focus-ring);
+}
+
+.reminder-field-summary {
+    display: flex;
+    flex-direction: column;
+    gap: 0.2rem;
+    margin: 0;
+
+    font-family: var(--font-ui);
+    font-size: 1.05rem;
+    line-height: 1.4;
+    color: var(--color-text);
+    text-align: center;
+}
+
+.reminder-field-summary strong {
+    font-weight: 700;
+}
+
+.reminder-field-tz {
+    font-size: 0.9rem;
+    color: var(--color-text-muted);
+}
+
+.reminder-repeat {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: var(--space-2);
+}
+
+.reminder-repeat-label {
+    align-self: flex-start;
+    font-family: var(--font-ui);
+    font-size: var(--text-sm);
+    font-weight: 700;
+    color: var(--color-text-muted);
+}
+
+.reminder-repeat-count {
+    display: flex;
+    align-items: center;
+    gap: var(--space-2);
+
+    font-family: var(--font-ui);
+    font-size: var(--text-sm);
+    font-weight: 600;
+    color: var(--color-text);
+}
+
+.reminder-repeat-select {
+    padding: var(--space-1) var(--space-2);
+    min-height: 2.5rem;
+
+    font-family: var(--font-ui);
+    font-size: var(--text-sm);
+    font-weight: 600;
+    color: var(--color-text);
+
+    background: var(--color-surface);
+    border: 1.5px solid var(--color-line-soft);
+    border-radius: var(--radius-md);
+    cursor: pointer;
+}
+
+.reminder-repeat-select:focus-visible {
+    outline: none;
+    border-color: var(--color-primary);
+    box-shadow: var(--focus-ring);
 }

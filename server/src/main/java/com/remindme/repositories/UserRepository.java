@@ -5,6 +5,8 @@ import software.amazon.awssdk.services.dynamodb.model.QueryRequest;
 import software.amazon.awssdk.services.dynamodb.model.QueryResponse;
 import software.amazon.awssdk.services.dynamodb.model.UpdateItemRequest;
 import software.amazon.awssdk.services.dynamodb.model.AttributeValue;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Repository;
 import com.remindme.models.User;
 import java.time.Instant;
@@ -13,6 +15,8 @@ import java.util.Map;
 
 @Repository
 public class UserRepository {
+
+    private static final Logger log = LoggerFactory.getLogger(UserRepository.class);
 
     private final DynamoDbClient dynamoDbClient;
     private static final String TABLE_NAME = "Users";
@@ -86,7 +90,7 @@ public class UserRepository {
             dynamoDbClient.updateItem(updateItemRequest);
             return true;
         } catch (Exception e) {
-            e.printStackTrace();
+            log.error("DynamoDB error updating user", e);
             return false;
         }
     }
@@ -109,7 +113,7 @@ public class UserRepository {
             dynamoDbClient.updateItem(updateItemRequest);
             return true;
         } catch (Exception e) {
-            e.printStackTrace();
+            log.error("DynamoDB error updating user", e);
             return false;
         }
     }

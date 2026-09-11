@@ -3,10 +3,13 @@ import { useLocation, useNavigate } from "react-router-dom";
 import queryString from "query-string";
 import axios from "axios";
 import Loader from "../Loader/Loader";
+import { useUser } from "./UserContext";
+import { validateAccessToken, fetchUserData } from "./authUtils";
 
 const AuthCallback: React.FC = () => {
   const location = useLocation();
   const navigate = useNavigate();
+  const { setUser } = useUser();
 
   const effectRan = useRef(false);
 
@@ -38,6 +41,13 @@ const AuthCallback: React.FC = () => {
           if (refreshToken && accessToken) {
             localStorage.setItem("refresh_token", refreshToken);
             localStorage.setItem("access_token", accessToken);
+
+            const { isValid, email } = await validateAccessToken(accessToken);
+            if (isValid && email) {
+              const userData = await fetchUserData(email);
+              setUser(userData);
+            }
+
             navigate("/");
           } else {
             console.log("Tokens not received from the backend.");

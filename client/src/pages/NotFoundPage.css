@@ -1,0 +1,35 @@
+.not-found-page {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    gap: var(--space-4);
+
+    min-height: 100%;
+    padding: var(--space-6) var(--space-4);
+    text-align: center;
+}
+
+.not-found-icon {
+    font-size: var(--text-3xl);
+    color: var(--color-primary);
+}
+
+.not-found-title {
+    margin: 0;
+    font-size: var(--text-2xl);
+    font-weight: 700;
+    color: var(--color-primary);
+}
+
+.not-found-text {
+    max-width: 38rem;
+    margin: 0;
+    font-size: var(--text-lg);
+    line-height: 1.5;
+    color: var(--color-text-muted);
+}
+
+.not-found-page .btn {
+    text-decoration: none;
+}
