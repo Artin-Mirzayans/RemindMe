@@ -58,7 +58,9 @@ class FeedMetricsRepositoryTest {
         ArgumentCaptor<UpdateItemRequest> captor = ArgumentCaptor.forClass(UpdateItemRequest.class);
         verify(dynamoDbClient).updateItem(captor.capture());
 
-        assertThat(captor.getValue().updateExpression()).contains("ADD Generations").contains("Empties");
+        // field order isn't guaranteed (Map.of shuffles it per JVM run), just that both landed
+        assertThat(captor.getValue().updateExpression()).startsWith("ADD ").contains("Generations")
+                .contains("Empties");
     }
 
     @Test
