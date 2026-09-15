@@ -56,7 +56,7 @@ module.exports = (env, argv) => {
             port: 3000,
         },
         output: {
-            filename: 'bundle.js',
+            filename: isProduction ? '[name].[contenthash].js' : 'bundle.js',
             path: path.resolve(__dirname, 'dist'),
             publicPath: '/'
         },
@@ -66,7 +66,9 @@ module.exports = (env, argv) => {
                     ? path.resolve(__dirname, '.env.production')
                     : path.resolve(__dirname, '.env.development'),
             }),
-            new MiniCssExtractPlugin(),
+            new MiniCssExtractPlugin({
+                filename: isProduction ? '[name].[contenthash].css' : 'main.css',
+            }),
             new HtmlWebpackPlugin({
                 filename: "index.html",
                 template: path.resolve(__dirname, "./public/index.html"),
