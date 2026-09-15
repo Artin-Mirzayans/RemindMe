@@ -7,6 +7,7 @@ import ProfileContent from "./Profile/ProfileContent";
 import DigestContent from "./Digest/DigestContent";
 import WatchlistContent from "./Watchlist/WatchlistContent";
 import NearbyContent from "./Nearby/NearbyContent";
+import SystemContent from "./System/SystemContent";
 import MainPage from "../pages/MainPage";
 import NotFoundPage from "../pages/NotFoundPage";
 import { UserProvider } from "./Auth/UserContext";
@@ -23,6 +24,7 @@ const AppRouter = () => {
             <Route path="nearby" element={<NearbyContent />} />
             <Route path="reminders" element={<ReminderContent />} />
             <Route path="profile" element={<ProfileContent />} />
+            <Route path="system" element={<SystemContent />} />
           </Route>
           <Route path="*" element={<NotFoundPage />} />
         </Routes>

@@ -2,7 +2,7 @@ import React from "react";
 import { Link } from "react-router-dom";
 
 import Hamburger from "hamburger-react";
-import { LuNewspaper, LuBellRing, LuCalendarClock, LuMapPin } from "react-icons/lu";
+import { LuNewspaper, LuBellRing, LuCalendarClock, LuMapPin, LuActivity } from "react-icons/lu";
 import { CgProfile } from "react-icons/cg";
 import { FaGithub } from "react-icons/fa6";
 import { MdLogout } from "react-icons/md";
@@ -66,6 +66,12 @@ const MobileNav: React.FC<MobileNavProps> = ({
             <span className="mobile-nav-desc">Profile</span>
             <span className="mobile-nav-icon">
               <CgProfile size={32} />
+            </span>
+          </Link>
+          <Link to="system" className="mobile-nav-link" onClick={toggleMenu}>
+            <span className="mobile-nav-desc">System</span>
+            <span className="mobile-nav-icon">
+              <LuActivity size={32} />
             </span>
           </Link>
           <a

@@ -1,7 +1,7 @@
 import React from "react";
 import { Link } from "react-router-dom";
 
-import { LuNewspaper, LuBellRing, LuCalendarClock, LuMapPin } from "react-icons/lu";
+import { LuNewspaper, LuBellRing, LuCalendarClock, LuMapPin, LuActivity } from "react-icons/lu";
 import { CgProfile } from "react-icons/cg";
 import { FaGithub } from "react-icons/fa";
 import { MdLogout } from "react-icons/md";
@@ -45,6 +45,10 @@ const DesktopNav: React.FC<DesktopNavProps> = ({ handleLogout }) => {
         <Link to="profile" className="nav-link">
           <CgProfile size={26} />
           <span>Profile</span>
+        </Link>
+        <Link to="system" className="nav-link">
+          <LuActivity size={26} />
+          <span>System</span>
         </Link>
         <a
           href="https://github.com/Artin-Mirzayans/RemindMe"
