@@ -19,6 +19,7 @@ const BAR_MAX_WIDTH = 18;
 const SEGMENT_GAP = 2;
 const AXIS_LEFT = 34;
 const AXIS_BOTTOM = 24;
+const AXIS_TOP = 10;
 
 const niceMax = (value: number): number => {
   if (value <= 0) return 4;
@@ -50,7 +51,7 @@ const GenerationsChart: React.FC<Props> = ({ summaries, labels }) => {
   const maxTotal = niceMax(Math.max(...totalsPerDay));
 
   const plotWidth = CHART_WIDTH - AXIS_LEFT;
-  const plotHeight = CHART_HEIGHT - AXIS_BOTTOM;
+  const plotHeight = CHART_HEIGHT - AXIS_BOTTOM - AXIS_TOP;
   const slot = plotWidth / days.length;
   const barWidth = Math.min(BAR_MAX_WIDTH, slot * 0.6);
 
@@ -80,7 +81,7 @@ const GenerationsChart: React.FC<Props> = ({ summaries, labels }) => {
         aria-label="Real generations per day, by feature, over the last 30 days"
       >
         {yTicks.map((tick) => {
-          const y = AXIS_LEFT > 0 ? plotHeight - (tick / maxTotal) * plotHeight : 0;
+          const y = AXIS_TOP + plotHeight - (tick / maxTotal) * plotHeight;
           return (
             <g key={tick}>
               <line
@@ -102,7 +103,7 @@ const GenerationsChart: React.FC<Props> = ({ summaries, labels }) => {
           let cumulative = 0;
           const segments = perDay[i].map((value, seriesIndex) => {
             const height = (value / maxTotal) * plotHeight;
-            const y = plotHeight - cumulative - height;
+            const y = AXIS_TOP + plotHeight - cumulative - height;
             cumulative += height;
             return { value, height, y, seriesIndex };
           });
@@ -119,7 +120,7 @@ const GenerationsChart: React.FC<Props> = ({ summaries, labels }) => {
             >
               <rect
                 x={AXIS_LEFT + i * slot}
-                y={0}
+                y={AXIS_TOP}
                 width={slot}
                 height={plotHeight}
                 fill="transparent"
@@ -145,8 +146,8 @@ const GenerationsChart: React.FC<Props> = ({ summaries, labels }) => {
         <line
           x1={AXIS_LEFT}
           x2={CHART_WIDTH}
-          y1={plotHeight}
-          y2={plotHeight}
+          y1={AXIS_TOP + plotHeight}
+          y2={AXIS_TOP + plotHeight}
           className="generations-chart-axis"
         />
       </svg>
