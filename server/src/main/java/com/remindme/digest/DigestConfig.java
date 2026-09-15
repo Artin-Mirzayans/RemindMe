@@ -11,6 +11,7 @@ import org.springframework.context.annotation.Configuration;
 
 import com.anthropic.client.AnthropicClient;
 import com.remindme.config.AnthropicClientFactory;
+import com.remindme.evals.EvalsService;
 import com.remindme.search.TavilySearchClient;
 
 @Configuration
@@ -20,7 +21,7 @@ public class DigestConfig {
 
     @Bean
     DigestGenerator digestGenerator(@Value("${anthropic.api_key:}") String apiKey,
-            @Value("${tavily.api_key:}") String tavilyApiKey) {
+            @Value("${tavily.api_key:}") String tavilyApiKey, EvalsService evalsService) {
         AnthropicClient client = AnthropicClientFactory.createIfConfigured(apiKey);
         if (client == null) {
             log.info("No Anthropic API key configured, the daily digest will stay empty");
@@ -33,6 +34,7 @@ public class DigestConfig {
         }
 
         log.info("Tavily API key configured, using ESPN + Tavily hybrid digest generation");
-        return new HybridDigestGenerator(client, new TavilySearchClient(tavilyApiKey), new EspnScheduleClient());
+        return new HybridDigestGenerator(client, new TavilySearchClient(tavilyApiKey), new EspnScheduleClient(),
+                evalsService);
     }
 }

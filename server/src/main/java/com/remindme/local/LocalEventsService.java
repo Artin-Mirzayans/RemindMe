@@ -19,6 +19,7 @@ import org.springframework.stereotype.Service;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.remindme.config.FeedCacheStore;
+import com.remindme.evals.EvalsService;
 
 // keyed by location instead of one global cache like digest/watchlist, but same rolling window
 // and refresh rules, and drops already-started events on every read
@@ -37,6 +38,7 @@ public class LocalEventsService {
     private final LocalEventsGenerator generator;
     private final Clock clock;
     private final FeedCacheStore cacheStore;
+    private final EvalsService evalsService;
     private final Map<String, Cached> cache = new ConcurrentHashMap<>();
     private final Map<String, ReentrantLock> locks = new ConcurrentHashMap<>();
 
@@ -47,18 +49,24 @@ public class LocalEventsService {
     }
 
     @Autowired
-    public LocalEventsService(LocalEventsGenerator generator, FeedCacheStore cacheStore) {
-        this(generator, Clock.system(ZoneOffset.UTC), cacheStore);
+    public LocalEventsService(LocalEventsGenerator generator, FeedCacheStore cacheStore, EvalsService evalsService) {
+        this(generator, Clock.system(ZoneOffset.UTC), cacheStore, evalsService);
     }
 
     LocalEventsService(LocalEventsGenerator generator, Clock clock) {
-        this(generator, clock, FeedCacheStore.disabled());
+        this(generator, clock, FeedCacheStore.disabled(), EvalsService.disabled());
     }
 
     LocalEventsService(LocalEventsGenerator generator, Clock clock, FeedCacheStore cacheStore) {
+        this(generator, clock, cacheStore, EvalsService.disabled());
+    }
+
+    LocalEventsService(LocalEventsGenerator generator, Clock clock, FeedCacheStore cacheStore,
+            EvalsService evalsService) {
         this.generator = generator;
         this.clock = clock;
         this.cacheStore = cacheStore;
+        this.evalsService = evalsService;
         cacheStore.load(CACHE_NAME, new TypeReference<Map<String, Snapshot>>() {
         }).ifPresent(saved -> {
             saved.forEach((key, snap) -> cache.put(key,
@@ -74,6 +82,7 @@ public class LocalEventsService {
     }
 
     public LocalEventsWindow forLocation(GeoLocation location, boolean force) {
+        evalsService.recordRequest(EvalsService.LOCAL_EVENTS);
         LocalDate today = LocalDate.now(clock);
         String key = location.label() == null ? "unknown" : location.label().toLowerCase();
 

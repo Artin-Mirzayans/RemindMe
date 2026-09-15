@@ -14,6 +14,8 @@ import com.anthropic.models.messages.ThinkingConfigDisabled;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.remindme.config.UsageLogging;
+import com.remindme.evals.EvalsService;
+import com.remindme.evals.GenerationOutcome;
 import com.remindme.search.TavilySearchClient;
 import com.remindme.search.TavilySearchResult;
 
@@ -40,16 +42,20 @@ public class TavilyWatchlistGenerator implements WatchlistGenerator {
 
     private final AnthropicClient client;
     private final TavilySearchClient tavilyClient;
+    private final EvalsService evalsService;
     private final ObjectMapper objectMapper = new ObjectMapper()
             .configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
 
-    public TavilyWatchlistGenerator(AnthropicClient client, TavilySearchClient tavilyClient) {
+    public TavilyWatchlistGenerator(AnthropicClient client, TavilySearchClient tavilyClient,
+            EvalsService evalsService) {
         this.client = client;
         this.tavilyClient = tavilyClient;
+        this.evalsService = evalsService;
     }
 
     @Override
     public WatchlistWindow generate(LocalDate windowStart, LocalDate windowEnd) {
+        long start = System.currentTimeMillis();
         List<TavilySearchResult> results = QUERY_TEMPLATES.stream()
                 .map(template -> template.formatted(windowStart, windowEnd))
                 .map(query -> CompletableFuture.supplyAsync(() -> tavilyClient.search(query)))
@@ -61,6 +67,8 @@ public class TavilyWatchlistGenerator implements WatchlistGenerator {
         // every query came back empty (Tavily down, or no key) - nothing to curate
         if (results.stream().noneMatch(TavilySearchResult::hasResults)) {
             log.warn("No web results for the {}..{} watchlist - skipping the model call", windowStart, windowEnd);
+            evalsService.recordGeneration(EvalsService.WATCHLIST, GenerationOutcome.EMPTY, 0, 0, 0,
+                    System.currentTimeMillis() - start);
             return WatchlistWindow.empty(windowStart.toString(), windowEnd.toString());
         }
 
@@ -77,15 +85,27 @@ public class TavilyWatchlistGenerator implements WatchlistGenerator {
 
         log.info("Requesting watchlist for {}..{} (Tavily-backed)", windowStart, windowEnd);
 
-        var response = client.messages().create(params);
-        UsageLogging.log(log, "Watchlist", MODEL, response.usage());
+        try {
+            var response = client.messages().create(params);
+            double cost = UsageLogging.log(log, "Watchlist", MODEL, response.usage());
 
-        String text = response.content().stream()
-                .flatMap(block -> block.text().stream())
-                .map(block -> block.text())
-                .collect(Collectors.joining());
+            String text = response.content().stream()
+                    .flatMap(block -> block.text().stream())
+                    .map(block -> block.text())
+                    .collect(Collectors.joining());
 
-        return parse(text, windowStart, windowEnd);
+            WatchlistWindow window = parse(text, windowStart, windowEnd);
+            evalsService.recordGeneration(EvalsService.WATCHLIST,
+                    window.isEmpty() ? GenerationOutcome.EMPTY : GenerationOutcome.SUCCESS, cost,
+                    response.usage().inputTokens(), response.usage().outputTokens(),
+                    System.currentTimeMillis() - start);
+
+            return window;
+        } catch (RuntimeException e) {
+            evalsService.recordGeneration(EvalsService.WATCHLIST, GenerationOutcome.FAILED, 0, 0, 0,
+                    System.currentTimeMillis() - start);
+            throw e;
+        }
     }
 
     WatchlistWindow parse(String text, LocalDate windowStart, LocalDate windowEnd) {

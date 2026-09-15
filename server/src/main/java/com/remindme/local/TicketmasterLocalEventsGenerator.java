@@ -13,6 +13,8 @@ import com.anthropic.models.messages.ThinkingConfigDisabled;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.remindme.config.UsageLogging;
+import com.remindme.evals.EvalsService;
+import com.remindme.evals.GenerationOutcome;
 import com.remindme.local.TicketmasterClient.Event;
 
 // fetches ticketed events near the user from Ticketmaster, then one plain Claude call curates
@@ -26,19 +28,25 @@ public class TicketmasterLocalEventsGenerator implements LocalEventsGenerator {
 
     private final AnthropicClient client;
     private final TicketmasterClient ticketmasterClient;
+    private final EvalsService evalsService;
     private final ObjectMapper objectMapper = new ObjectMapper()
             .configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
 
-    public TicketmasterLocalEventsGenerator(AnthropicClient client, TicketmasterClient ticketmasterClient) {
+    public TicketmasterLocalEventsGenerator(AnthropicClient client, TicketmasterClient ticketmasterClient,
+            EvalsService evalsService) {
         this.client = client;
         this.ticketmasterClient = ticketmasterClient;
+        this.evalsService = evalsService;
     }
 
     @Override
     public LocalEventsWindow generate(GeoLocation location, LocalDate windowStart, LocalDate windowEnd) {
+        long start = System.currentTimeMillis();
         List<Event> events = ticketmasterClient.near(location, windowStart, windowEnd);
         if (events.isEmpty()) {
             log.warn("Ticketmaster returned nothing for {}", location.label());
+            evalsService.recordGeneration(EvalsService.LOCAL_EVENTS, GenerationOutcome.EMPTY, 0, 0, 0,
+                    System.currentTimeMillis() - start);
             return LocalEventsWindow.empty(location.label(), windowStart.toString(), windowEnd.toString());
         }
 
@@ -53,15 +61,27 @@ public class TicketmasterLocalEventsGenerator implements LocalEventsGenerator {
 
         log.info("Requesting local events for {} ({}..{})", location.label(), windowStart, windowEnd);
 
-        var response = client.messages().create(params);
-        UsageLogging.log(log, "LocalEvents", MODEL, response.usage());
+        try {
+            var response = client.messages().create(params);
+            double cost = UsageLogging.log(log, "LocalEvents", MODEL, response.usage());
 
-        String text = response.content().stream()
-                .flatMap(block -> block.text().stream())
-                .map(block -> block.text())
-                .collect(Collectors.joining());
+            String text = response.content().stream()
+                    .flatMap(block -> block.text().stream())
+                    .map(block -> block.text())
+                    .collect(Collectors.joining());
 
-        return parse(text, location.label(), windowStart, windowEnd);
+            LocalEventsWindow window = parse(text, location.label(), windowStart, windowEnd);
+            evalsService.recordGeneration(EvalsService.LOCAL_EVENTS,
+                    window.isEmpty() ? GenerationOutcome.EMPTY : GenerationOutcome.SUCCESS, cost,
+                    response.usage().inputTokens(), response.usage().outputTokens(),
+                    System.currentTimeMillis() - start);
+
+            return window;
+        } catch (RuntimeException e) {
+            evalsService.recordGeneration(EvalsService.LOCAL_EVENTS, GenerationOutcome.FAILED, 0, 0, 0,
+                    System.currentTimeMillis() - start);
+            throw e;
+        }
     }
 
     LocalEventsWindow parse(String text, String location, LocalDate windowStart, LocalDate windowEnd) {

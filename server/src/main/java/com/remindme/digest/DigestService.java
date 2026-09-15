@@ -15,6 +15,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.remindme.config.FeedCacheStore;
+import com.remindme.evals.EvalsService;
 
 @Service
 public class DigestService {
@@ -27,6 +28,7 @@ public class DigestService {
     private final DigestGenerator generator;
     private final Clock clock;
     private final FeedCacheStore cacheStore;
+    private final EvalsService evalsService;
 
     private final ReentrantLock generationLock = new ReentrantLock();
     private volatile Cached cached;
@@ -39,18 +41,23 @@ public class DigestService {
     }
 
     @Autowired
-    public DigestService(DigestGenerator generator, FeedCacheStore cacheStore) {
-        this(generator, Clock.system(ZoneOffset.UTC), cacheStore);
+    public DigestService(DigestGenerator generator, FeedCacheStore cacheStore, EvalsService evalsService) {
+        this(generator, Clock.system(ZoneOffset.UTC), cacheStore, evalsService);
     }
 
     DigestService(DigestGenerator generator, Clock clock) {
-        this(generator, clock, FeedCacheStore.disabled());
+        this(generator, clock, FeedCacheStore.disabled(), EvalsService.disabled());
     }
 
     DigestService(DigestGenerator generator, Clock clock, FeedCacheStore cacheStore) {
+        this(generator, clock, cacheStore, EvalsService.disabled());
+    }
+
+    DigestService(DigestGenerator generator, Clock clock, FeedCacheStore cacheStore, EvalsService evalsService) {
         this.generator = generator;
         this.clock = clock;
         this.cacheStore = cacheStore;
+        this.evalsService = evalsService;
         this.cached = cacheStore.load(CACHE_NAME, Snapshot.class)
                 .map(s -> new Cached(LocalDate.parse(s.date()), s.digest()))
                 .orElse(null);
@@ -60,6 +67,7 @@ public class DigestService {
     }
 
     public DailyDigest today() {
+        evalsService.recordRequest(EvalsService.DIGEST);
         LocalDate today = LocalDate.now(clock);
 
         DailyDigest hit = cachedFor(today);

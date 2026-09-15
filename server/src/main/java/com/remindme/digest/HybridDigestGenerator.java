@@ -17,6 +17,8 @@ import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.remindme.config.UsageLogging;
 import com.remindme.digest.EspnScheduleClient.Fixture;
+import com.remindme.evals.EvalsService;
+import com.remindme.evals.GenerationOutcome;
 import com.remindme.search.TavilySearchClient;
 import com.remindme.search.TavilySearchResult;
 
@@ -33,18 +35,21 @@ public class HybridDigestGenerator implements DigestGenerator {
     private final AnthropicClient client;
     private final TavilySearchClient tavilyClient;
     private final EspnScheduleClient espnClient;
+    private final EvalsService evalsService;
     private final ObjectMapper objectMapper = new ObjectMapper()
             .configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
 
     public HybridDigestGenerator(AnthropicClient client, TavilySearchClient tavilyClient,
-            EspnScheduleClient espnClient) {
+            EspnScheduleClient espnClient, EvalsService evalsService) {
         this.client = client;
         this.tavilyClient = tavilyClient;
         this.espnClient = espnClient;
+        this.evalsService = evalsService;
     }
 
     @Override
     public DailyDigest generate(Instant now) {
+        long start = System.currentTimeMillis();
         LocalDate today = now.atZone(ZoneOffset.UTC).toLocalDate();
         LocalDate tomorrow = today.plusDays(1);
 
@@ -63,6 +68,8 @@ public class HybridDigestGenerator implements DigestGenerator {
         // nothing to curate means no reason to pay for a call
         if (fixtures.isEmpty() && !tvResult.hasResults() && !otherResult.hasResults()) {
             log.warn("No fixtures and no web results for {} - skipping the model call", today);
+            evalsService.recordGeneration(EvalsService.DIGEST, GenerationOutcome.EMPTY, 0, 0, 0,
+                    System.currentTimeMillis() - start);
             return DailyDigest.empty(today.toString());
         }
 
@@ -89,15 +96,27 @@ public class HybridDigestGenerator implements DigestGenerator {
 
         log.info("Requesting digest for {} (hybrid, now={})", today, now);
 
-        var response = client.messages().create(params);
-        UsageLogging.log(log, "Digest", MODEL, response.usage());
+        try {
+            var response = client.messages().create(params);
+            double cost = UsageLogging.log(log, "Digest", MODEL, response.usage());
 
-        String text = response.content().stream()
-                .flatMap(block -> block.text().stream())
-                .map(block -> block.text())
-                .collect(Collectors.joining());
+            String text = response.content().stream()
+                    .flatMap(block -> block.text().stream())
+                    .map(block -> block.text())
+                    .collect(Collectors.joining());
 
-        return parse(text, today);
+            DailyDigest digest = parse(text, today);
+            evalsService.recordGeneration(EvalsService.DIGEST,
+                    digest.isEmpty() ? GenerationOutcome.EMPTY : GenerationOutcome.SUCCESS, cost,
+                    response.usage().inputTokens(), response.usage().outputTokens(),
+                    System.currentTimeMillis() - start);
+
+            return digest;
+        } catch (RuntimeException e) {
+            evalsService.recordGeneration(EvalsService.DIGEST, GenerationOutcome.FAILED, 0, 0, 0,
+                    System.currentTimeMillis() - start);
+            throw e;
+        }
     }
 
     DailyDigest parse(String text, LocalDate today) {

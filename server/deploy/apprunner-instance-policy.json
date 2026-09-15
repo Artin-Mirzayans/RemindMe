@@ -21,7 +21,8 @@
         "arn:aws:dynamodb:us-west-1:891377299679:table/Users/index/*",
         "arn:aws:dynamodb:us-west-1:891377299679:table/WatchlistInterests",
         "arn:aws:dynamodb:us-west-1:891377299679:table/WatchlistInterests/index/*",
-        "arn:aws:dynamodb:us-west-1:891377299679:table/FeedCache"
+        "arn:aws:dynamodb:us-west-1:891377299679:table/FeedCache",
+        "arn:aws:dynamodb:us-west-1:891377299679:table/FeedMetrics"
       ]
     },
     {

@@ -10,6 +10,7 @@ import org.springframework.context.annotation.Configuration;
 
 import com.anthropic.client.AnthropicClient;
 import com.remindme.config.AnthropicClientFactory;
+import com.remindme.evals.EvalsService;
 
 @Configuration
 public class LocalEventsConfig {
@@ -18,7 +19,7 @@ public class LocalEventsConfig {
 
     @Bean
     LocalEventsGenerator localEventsGenerator(@Value("${anthropic.api_key:}") String anthropicKey,
-            @Value("${ticketmaster.api_key:}") String ticketmasterKey) {
+            @Value("${ticketmaster.api_key:}") String ticketmasterKey, EvalsService evalsService) {
         AnthropicClient client = AnthropicClientFactory.createIfConfigured(anthropicKey);
         boolean hasTicketmaster = ticketmasterKey != null && !ticketmasterKey.isBlank();
 
@@ -29,6 +30,6 @@ public class LocalEventsConfig {
         }
 
         log.info("Ticketmaster key configured, using Ticketmaster-backed Nearby generation");
-        return new TicketmasterLocalEventsGenerator(client, new TicketmasterClient(ticketmasterKey));
+        return new TicketmasterLocalEventsGenerator(client, new TicketmasterClient(ticketmasterKey), evalsService);
     }
 }

@@ -10,6 +10,7 @@ import org.springframework.context.annotation.Configuration;
 
 import com.anthropic.client.AnthropicClient;
 import com.remindme.config.AnthropicClientFactory;
+import com.remindme.evals.EvalsService;
 import com.remindme.search.TavilySearchClient;
 
 @Configuration
@@ -19,7 +20,7 @@ public class WatchlistConfig {
 
     @Bean
     WatchlistGenerator watchlistGenerator(@Value("${anthropic.api_key:}") String apiKey,
-            @Value("${tavily.api_key:}") String tavilyApiKey) {
+            @Value("${tavily.api_key:}") String tavilyApiKey, EvalsService evalsService) {
         AnthropicClient client = AnthropicClientFactory.createIfConfigured(apiKey);
         if (client == null) {
             log.info("No Anthropic API key configured, the watchlist will stay empty");
@@ -34,6 +35,6 @@ public class WatchlistConfig {
         }
 
         log.info("Tavily API key configured, using Tavily-backed watchlist generation");
-        return new TavilyWatchlistGenerator(client, new TavilySearchClient(tavilyApiKey));
+        return new TavilyWatchlistGenerator(client, new TavilySearchClient(tavilyApiKey), evalsService);
     }
 }

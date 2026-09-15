@@ -15,12 +15,14 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
 import com.anthropic.client.AnthropicClient;
+import com.remindme.evals.EvalsService;
 import com.remindme.search.TavilySearchClient;
 import com.remindme.search.TavilySearchResult;
 
 class HybridDigestGeneratorTest {
 
-    private final HybridDigestGenerator generator = new HybridDigestGenerator(null, null, null);
+    private final HybridDigestGenerator generator = new HybridDigestGenerator(null, null, null,
+            EvalsService.disabled());
     private final LocalDate today = LocalDate.parse("2026-09-10");
 
     @Test
@@ -33,7 +35,7 @@ class HybridDigestGeneratorTest {
         when(espn.upcoming(any(), any())).thenReturn(List.of());
         when(tavily.search(anyString())).thenReturn(new TavilySearchResult("q", null, List.of()));
 
-        HybridDigestGenerator gen = new HybridDigestGenerator(anthropic, tavily, espn);
+        HybridDigestGenerator gen = new HybridDigestGenerator(anthropic, tavily, espn, EvalsService.disabled());
         DailyDigest digest = gen.generate(Instant.parse("2026-09-10T08:00:00Z"));
 
         assertThat(digest.isEmpty()).isTrue();

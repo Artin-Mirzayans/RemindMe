@@ -13,12 +13,14 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
 import com.anthropic.client.AnthropicClient;
+import com.remindme.evals.EvalsService;
 import com.remindme.search.TavilySearchClient;
 import com.remindme.search.TavilySearchResult;
 
 class TavilyWatchlistGeneratorTest {
 
-    private final TavilyWatchlistGenerator generator = new TavilyWatchlistGenerator(null, null);
+    private final TavilyWatchlistGenerator generator = new TavilyWatchlistGenerator(null, null,
+            EvalsService.disabled());
     private final LocalDate start = LocalDate.parse("2026-09-12");
     private final LocalDate end = LocalDate.parse("2026-09-26");
 
@@ -29,7 +31,7 @@ class TavilyWatchlistGeneratorTest {
         TavilySearchClient tavily = mock(TavilySearchClient.class);
         when(tavily.search(anyString())).thenReturn(new TavilySearchResult("q", null, List.of()));
 
-        TavilyWatchlistGenerator gen = new TavilyWatchlistGenerator(anthropic, tavily);
+        TavilyWatchlistGenerator gen = new TavilyWatchlistGenerator(anthropic, tavily, EvalsService.disabled());
         WatchlistWindow window = gen.generate(start, end);
 
         assertThat(window.isEmpty()).isTrue();

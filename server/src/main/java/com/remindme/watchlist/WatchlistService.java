@@ -16,6 +16,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.remindme.config.FeedCacheStore;
+import com.remindme.evals.EvalsService;
 
 @Service
 public class WatchlistService {
@@ -34,6 +35,7 @@ public class WatchlistService {
     private final WatchlistGenerator generator;
     private final Clock clock;
     private final FeedCacheStore cacheStore;
+    private final EvalsService evalsService;
 
     private final ReentrantLock generationLock = new ReentrantLock();
     private volatile Cached cached;
@@ -46,18 +48,24 @@ public class WatchlistService {
     }
 
     @Autowired
-    public WatchlistService(WatchlistGenerator generator, FeedCacheStore cacheStore) {
-        this(generator, Clock.system(ZoneOffset.UTC), cacheStore);
+    public WatchlistService(WatchlistGenerator generator, FeedCacheStore cacheStore, EvalsService evalsService) {
+        this(generator, Clock.system(ZoneOffset.UTC), cacheStore, evalsService);
     }
 
     WatchlistService(WatchlistGenerator generator, Clock clock) {
-        this(generator, clock, FeedCacheStore.disabled());
+        this(generator, clock, FeedCacheStore.disabled(), EvalsService.disabled());
     }
 
     WatchlistService(WatchlistGenerator generator, Clock clock, FeedCacheStore cacheStore) {
+        this(generator, clock, cacheStore, EvalsService.disabled());
+    }
+
+    WatchlistService(WatchlistGenerator generator, Clock clock, FeedCacheStore cacheStore,
+            EvalsService evalsService) {
         this.generator = generator;
         this.clock = clock;
         this.cacheStore = cacheStore;
+        this.evalsService = evalsService;
         this.cached = cacheStore.load(CACHE_NAME, Snapshot.class)
                 .map(s -> new Cached(LocalDate.parse(s.generatedAt()), s.window()))
                 .orElse(null);
@@ -72,6 +80,7 @@ public class WatchlistService {
 
     // force = true means the user hit refresh, so ignore the cooldown if we're past it
     public WatchlistWindow current(boolean force) {
+        evalsService.recordRequest(EvalsService.WATCHLIST);
         LocalDate today = LocalDate.now(clock);
 
         Cached hit = cached;

@@ -22,7 +22,9 @@ public final class UsageLogging {
         return new double[] { 3.00, 15.00 }; // sonnet / default
     }
 
-    public static void log(Logger log, String label, String model, Usage usage) {
+    // returns the estimated cost so callers can feed it into their own tracking without
+    // redoing this math themselves
+    public static double log(Logger log, String label, String model, Usage usage) {
         long input = usage.inputTokens();
         long output = usage.outputTokens();
         long cacheRead = usage.cacheReadInputTokens().orElse(0L);
@@ -33,5 +35,7 @@ public final class UsageLogging {
 
         log.info("{} usage [{}]: input={} output={} cacheRead={} cacheWrite={} -> est ${}",
                 label, model, input, output, cacheRead, cacheWrite, String.format("%.4f", cost));
+
+        return cost;
     }
 }
