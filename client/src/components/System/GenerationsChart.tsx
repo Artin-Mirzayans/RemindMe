@@ -55,7 +55,9 @@ const GenerationsChart: React.FC<Props> = ({ summaries, labels }) => {
   const slot = plotWidth / days.length;
   const barWidth = Math.min(BAR_MAX_WIDTH, slot * 0.6);
 
-  const yTicks = [0, maxTotal / 2, maxTotal];
+  // dedupe after rounding - a maxTotal of 1 would otherwise show "1" twice
+  // (0.5 rounds up to 1, same as the max itself)
+  const yTicks = Array.from(new Set([0, Math.round(maxTotal / 2), maxTotal]));
 
   return (
     <div className="generations-chart">
