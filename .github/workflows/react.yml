@@ -78,7 +78,18 @@ jobs:
         env:
           S3_BUCKET: ${{ secrets.AWS_S3_BUCKET }}
         run: |
-          aws s3 sync client/dist s3://$S3_BUCKET --delete
+          aws s3 sync client/dist s3://$S3_BUCKET --delete \
+            --cache-control "public, max-age=31536000, immutable"
+
+          # index.html, bundle.js and main.css have no hash in their filename, so a browser
+          # that already cached them has no way to notice a new deploy on its own - without
+          # this they were being cached indefinitely (no header at all = the browser guesses),
+          # which is how a phone kept showing a redesign-old stylesheet for days
+          for f in index.html bundle.js bundle.js.LICENSE.txt main.css favicon.ico; do
+            if [ -f "client/dist/$f" ]; then
+              aws s3 cp "client/dist/$f" "s3://$S3_BUCKET/$f" --cache-control "no-cache"
+            fi
+          done
 
       - name: Invalidate CloudFront cache
         run: |
