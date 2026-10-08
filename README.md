@@ -11,11 +11,6 @@
 
 </div>
 
-<p align="center">
-  <img src="docs/screenshots/today-and-tomorrow.png" alt="Today & Tomorrow feed" width="62%" />
-  <img src="docs/screenshots/mobile.png" alt="Mobile view" width="24%" />
-</p>
-
 ## What it is
 
 RemindMe is a reminder app that texts or emails you at the exact time you pick, paired with three
