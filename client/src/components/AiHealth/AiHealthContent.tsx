@@ -133,7 +133,7 @@ const AiHealthContent: React.FC = () => {
                   </div>
 
                   <div className="ai-health-metric-row">
-                    <span>Time to update</span>
+                    <span>Update time</span>
                     <strong>{h?.avgLatencyMs == null ? "—" : seconds(h.avgLatencyMs)}</strong>
                   </div>
                 </div>
