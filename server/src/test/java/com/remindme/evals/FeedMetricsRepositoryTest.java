@@ -64,6 +64,18 @@ class FeedMetricsRepositoryTest {
     }
 
     @Test
+    @DisplayName("a skipped refresh is counted but adds no cost, tokens or latency")
+    void skippedRefreshRecordsNoUsage() {
+        repository().recordGeneration("LocalEvents", DAY, GenerationOutcome.SKIPPED, 0, 0, 0, 900);
+
+        ArgumentCaptor<UpdateItemRequest> captor = ArgumentCaptor.forClass(UpdateItemRequest.class);
+        verify(dynamoDbClient).updateItem(captor.capture());
+
+        assertThat(captor.getValue().updateExpression()).contains("Generations").contains("Skipped")
+                .doesNotContain("CostUsd").doesNotContain("LatencyMsTotal");
+    }
+
+    @Test
     @DisplayName("does not throw when DynamoDB fails - a metrics hiccup shouldn't break a feed")
     void swallowsWriteFailures() {
         when(dynamoDbClient.updateItem(any(UpdateItemRequest.class))).thenThrow(new RuntimeException("boom"));

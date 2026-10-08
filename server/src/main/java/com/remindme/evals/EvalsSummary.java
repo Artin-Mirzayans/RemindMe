@@ -8,6 +8,7 @@ public record EvalsSummary(
         int windowDays,
         long totalRequests,
         long totalGenerations,
+        long totalSkipped,
         double cacheHitRate,
         double successRate,
         double emptyRate,

@@ -7,9 +7,9 @@ import { FeedHealth } from "../../props/FeedHealthProps";
 import "./AiHealthContent.css";
 
 const FEATURES = [
-  { key: "Digest", label: "Today & Tomorrow", cadence: "Refreshed daily" },
-  { key: "Watchlist", label: "Planning Ahead", cadence: "Refreshed every few days" },
-  { key: "LocalEvents", label: "Nearby", cadence: "Refreshed per area, every few days" },
+  { key: "Digest", label: "Today & Tomorrow", cadence: "Updates every day" },
+  { key: "Watchlist", label: "Planning Ahead", cadence: "Updates every few days" },
+  { key: "LocalEvents", label: "Nearby", cadence: "Updates every few days for each area" },
 ];
 
 const HEALTHY_AT = 0.8;
@@ -25,12 +25,12 @@ const pct = (value: number) => `${Math.round(value * 100)}%`;
 
 const seconds = (ms: number) => {
   const s = ms / 1000;
-  return s < 10 ? `${s.toFixed(1)}s` : `${Math.round(s)}s`;
+  return s < 10 ? `${s.toFixed(1)} seconds` : `${Math.round(s)} seconds`;
 };
 
 const STATUS = {
-  healthy: { label: "Healthy", Icon: MdCheckCircle },
-  degraded: { label: "Degraded", Icon: MdWarningAmber },
+  healthy: { label: "Working well", Icon: MdCheckCircle },
+  degraded: { label: "Needs attention", Icon: MdWarningAmber },
   none: { label: "No data yet", Icon: MdHourglassEmpty },
 };
 
@@ -64,8 +64,8 @@ const AiHealthContent: React.FC = () => {
   }, [rows]);
 
   const headline = {
-    healthy: "All AI feeds are healthy",
-    degraded: "Some AI feeds are degraded",
+    healthy: "Everything is running smoothly",
+    degraded: "Something needs attention",
     none: "Collecting data",
   }[overall];
 
@@ -73,10 +73,9 @@ const AiHealthContent: React.FC = () => {
     <div className="ai-health">
       <div className="content-title">AI Health</div>
       <p className="ai-health-intro">
-        Today &amp; Tomorrow, Planning Ahead and Nearby are curated by Claude,
-        but only refreshed when they go stale. This page shows how those AI
-        features are holding up &mdash; how reliably they succeed and how long
-        a refresh takes &mdash; straight from what the app records on every run.
+        RemindMe uses AI to pick the events you see on Today &amp; Tomorrow,
+        Planning Ahead and Nearby. This page shows how that&apos;s going: how
+        often it works, and how long it takes.
       </p>
 
       {failed && (
@@ -94,7 +93,7 @@ const AiHealthContent: React.FC = () => {
           <div className={`ai-health-hero ai-health-hero--${overall}`}>
             {React.createElement(STATUS[overall].Icon, { size: 34 })}
             <div className="ai-health-hero-text">{headline}</div>
-            <div className="ai-health-hero-sub">based on the last 30 days of runs</div>
+            <div className="ai-health-hero-sub">Based on the last 30 days</div>
           </div>
 
           <div className="ai-health-grid">
@@ -114,7 +113,7 @@ const AiHealthContent: React.FC = () => {
 
                   <div className="ai-health-metric">
                     <div className="ai-health-metric-row">
-                      <span>Reliability</span>
+                      <span>How often it worked</span>
                       <strong>{h?.successRate == null ? "—" : pct(h.successRate)}</strong>
                     </div>
                     <div
@@ -122,8 +121,8 @@ const AiHealthContent: React.FC = () => {
                       role="img"
                       aria-label={
                         h?.successRate == null
-                          ? "No reliability data yet"
-                          : `Reliability ${pct(h.successRate)}`
+                          ? "No data yet"
+                          : `Worked ${pct(h.successRate)} of the time`
                       }
                     >
                       <div
@@ -134,7 +133,7 @@ const AiHealthContent: React.FC = () => {
                   </div>
 
                   <div className="ai-health-metric-row">
-                    <span>Typical refresh time</span>
+                    <span>Time to update</span>
                     <strong>{h?.avgLatencyMs == null ? "—" : seconds(h.avgLatencyMs)}</strong>
                   </div>
                 </div>
@@ -144,17 +143,16 @@ const AiHealthContent: React.FC = () => {
 
           <ul className="ai-health-tracked">
             <li>
-              Every AI call is logged with its outcome, speed, token usage and
-              estimated cost.
+              Every time the AI runs, we record whether it worked, how long it
+              took, and what it used.
             </li>
             <li>
-              Feeds are generated once and shared, so AI usage follows how
-              often content changes &mdash; not how many people visit.
+              The picks are made once and shared with everyone, so the AI only
+              runs when something new is needed &mdash; not every time someone
+              visits.
             </li>
             <li>
-              A lock stops a burst of requests from becoming a burst of paid
-              calls, and extended thinking is off to keep every call fast and
-              cheap.
+              Safeguards stop a rush of visitors from causing a rush of AI runs.
             </li>
           </ul>
         </>

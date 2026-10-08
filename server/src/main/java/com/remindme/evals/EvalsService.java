@@ -59,7 +59,7 @@ public class EvalsService {
 
     public List<FeedHealth> health(int days) {
         return summarizeAll(days).stream()
-                .map(s -> s.totalGenerations() == 0
+                .map(s -> s.totalGenerations() - s.totalSkipped() == 0
                         ? new FeedHealth(s.feature(), days, null, null)
                         : new FeedHealth(s.feature(), days, s.successRate(), s.avgLatencyMs()))
                 .toList();
@@ -86,6 +86,9 @@ public class EvalsService {
         long successes = series.stream().mapToLong(DailyMetrics::successes).sum();
         long empties = series.stream().mapToLong(DailyMetrics::empties).sum();
         long failures = series.stream().mapToLong(DailyMetrics::failures).sum();
+        long skipped = series.stream().mapToLong(DailyMetrics::skipped).sum();
+        // skipped refreshes never reached the model, so they don't count for or against it
+        long attempted = generations - skipped;
         double totalCost = series.stream().mapToDouble(DailyMetrics::costUsd).sum();
         long inputTokens = series.stream().mapToLong(DailyMetrics::inputTokens).sum();
         long outputTokens = series.stream().mapToLong(DailyMetrics::outputTokens).sum();
@@ -100,13 +103,14 @@ public class EvalsService {
                 days,
                 requests,
                 generations,
+                skipped,
                 rate(requests - generations, requests),
-                rate(successes, generations),
-                rate(empties, generations),
-                rate(failures, generations),
+                rate(successes, attempted),
+                rate(empties, attempted),
+                rate(failures, attempted),
                 totalCost,
-                generations == 0 ? 0 : totalCost / generations,
-                generations == 0 ? 0 : (double) latencyTotal / generations,
+                attempted == 0 ? 0 : totalCost / attempted,
+                attempted == 0 ? 0 : (double) latencyTotal / attempted,
                 inputTokens,
                 outputTokens,
                 daily);

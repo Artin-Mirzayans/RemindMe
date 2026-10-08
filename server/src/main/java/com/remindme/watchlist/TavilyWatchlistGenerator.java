@@ -67,7 +67,7 @@ public class TavilyWatchlistGenerator implements WatchlistGenerator {
         // every query came back empty (Tavily down, or no key) - nothing to curate
         if (results.stream().noneMatch(TavilySearchResult::hasResults)) {
             log.warn("No web results for the {}..{} watchlist - skipping the model call", windowStart, windowEnd);
-            evalsService.recordGeneration(EvalsService.WATCHLIST, GenerationOutcome.EMPTY, 0, 0, 0,
+            evalsService.recordGeneration(EvalsService.WATCHLIST, GenerationOutcome.SKIPPED, 0, 0, 0,
                     System.currentTimeMillis() - start);
             return WatchlistWindow.empty(windowStart.toString(), windowEnd.toString());
         }

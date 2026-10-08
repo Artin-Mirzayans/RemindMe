@@ -59,13 +59,8 @@ const DigestContent = () => {
       {!authLoading && !user && (
         <>
           <p className="digest-tagline">
-            You don&apos;t need a friend who&apos;s always plugged in.
-            RemindMe rounds up the most interesting things happening anywhere
-            in the world that you can actually watch &mdash; games,
-            premieres, fights, finals, launches &mdash; so you never miss the
-            ones that matter to you. Today &amp; Tomorrow is what&apos;s live
-            now; Planning Ahead looks two weeks out; the local tab covers
-            what&apos;s worth heading out for near you.
+            The games, premieres and big events worth watching live &mdash;
+            the biggest things happening today and tomorrow.
           </p>
 
           <SignInPrompt
@@ -82,17 +77,17 @@ const DigestContent = () => {
             <Loader />
           </div>
           <p className="digest-loading-note">
-            We&apos;re pulling together what&apos;s worth watching today and
-            tomorrow &mdash; one moment.
+            Finding what&apos;s worth watching today and tomorrow &mdash; one
+            moment.
           </p>
         </>
       ) : failed ? (
         <p className="digest-empty">
-          Today&apos;s digest couldn&apos;t be loaded. Try again shortly.
+          Couldn&apos;t load today&apos;s picks right now. Try again shortly.
         </p>
       ) : events.length === 0 ? (
         <p className="digest-empty">
-          No digest for today or tomorrow yet. Check back a little later.
+          Nothing here yet. Check back a little later.
         </p>
       ) : (
         <>

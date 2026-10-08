@@ -12,9 +12,10 @@ public record DailyMetrics(
         double costUsd,
         long inputTokens,
         long outputTokens,
-        long latencyMsTotal) {
+        long latencyMsTotal,
+        long skipped) {
 
     static DailyMetrics empty(String feature, String day) {
-        return new DailyMetrics(feature, day, 0, 0, 0, 0, 0, 0, 0, 0, 0);
+        return new DailyMetrics(feature, day, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
     }
 }

@@ -68,7 +68,7 @@ public class HybridDigestGenerator implements DigestGenerator {
         // nothing to curate means no reason to pay for a call
         if (fixtures.isEmpty() && !tvResult.hasResults() && !otherResult.hasResults()) {
             log.warn("No fixtures and no web results for {} - skipping the model call", today);
-            evalsService.recordGeneration(EvalsService.DIGEST, GenerationOutcome.EMPTY, 0, 0, 0,
+            evalsService.recordGeneration(EvalsService.DIGEST, GenerationOutcome.SKIPPED, 0, 0, 0,
                     System.currentTimeMillis() - start);
             return DailyDigest.empty(today.toString());
         }

@@ -45,7 +45,7 @@ public class TicketmasterLocalEventsGenerator implements LocalEventsGenerator {
         List<Event> events = ticketmasterClient.near(location, windowStart, windowEnd);
         if (events.isEmpty()) {
             log.warn("Ticketmaster returned nothing for {}", location.label());
-            evalsService.recordGeneration(EvalsService.LOCAL_EVENTS, GenerationOutcome.EMPTY, 0, 0, 0,
+            evalsService.recordGeneration(EvalsService.LOCAL_EVENTS, GenerationOutcome.SKIPPED, 0, 0, 0,
                     System.currentTimeMillis() - start);
             return LocalEventsWindow.empty(location.label(), windowStart.toString(), windowEnd.toString());
         }

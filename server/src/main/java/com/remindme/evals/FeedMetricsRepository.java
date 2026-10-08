@@ -43,15 +43,19 @@ public class FeedMetricsRepository {
             case SUCCESS -> "Successes";
             case EMPTY -> "Empties";
             case FAILED -> "Failures";
+            case SKIPPED -> "Skipped";
         };
 
-        add(feature, day, Map.of(
-                "Generations", "1",
-                outcomeField, "1",
-                "CostUsd", BigDecimal.valueOf(costUsd).toPlainString(),
-                "InputTokens", String.valueOf(inputTokens),
-                "OutputTokens", String.valueOf(outputTokens),
-                "LatencyMsTotal", String.valueOf(latencyMs)));
+        Map<String, String> increments = new java.util.HashMap<>();
+        increments.put("Generations", "1");
+        increments.put(outcomeField, "1");
+        if (outcome != GenerationOutcome.SKIPPED) {
+            increments.put("CostUsd", BigDecimal.valueOf(costUsd).toPlainString());
+            increments.put("InputTokens", String.valueOf(inputTokens));
+            increments.put("OutputTokens", String.valueOf(outputTokens));
+            increments.put("LatencyMsTotal", String.valueOf(latencyMs));
+        }
+        add(feature, day, increments);
     }
 
     private void add(String feature, LocalDate day, Map<String, String> increments) {
@@ -117,7 +121,8 @@ public class FeedMetricsRepository {
                 doubleAttr(item, "CostUsd"),
                 longAttr(item, "InputTokens"),
                 longAttr(item, "OutputTokens"),
-                longAttr(item, "LatencyMsTotal"));
+                longAttr(item, "LatencyMsTotal"),
+                longAttr(item, "Skipped"));
     }
 
     private long longAttr(Map<String, AttributeValue> item, String key) {

@@ -117,8 +117,8 @@ const WatchlistContent = () => {
         </div>
         {!authLoading && (
           <p className="watchlist-loading-note">
-            We&apos;re rounding up the most interesting things to watch over
-            the next two weeks &mdash; hang tight, this takes a moment.
+            Finding the biggest things coming up over the next two weeks
+            &mdash; hang tight, this takes a moment.
           </p>
         )}
       </div>
@@ -131,7 +131,7 @@ const WatchlistContent = () => {
         <div className="content-title">Planning Ahead</div>
         <SignInPrompt
           title="Sign in to unlock Planning Ahead"
-          description="Planning Ahead is a rolling look at the biggest things worth setting aside time for over the next two weeks - across sports, film, and more. Sign in with Google and it starts learning what you're into from what you click, so the events that matter most to you rise to the top. Here's a preview:"
+          description="The biggest things coming up over the next two weeks, so you can plan ahead. Sign in with Google and it learns what you like, so the events you care about most show up first. Here's a preview:"
         >
           <div className="watchlist-list">
             {SAMPLE_EVENTS.map((event, index) => (
@@ -166,11 +166,11 @@ const WatchlistContent = () => {
 
       {failed ? (
         <p className="watchlist-empty">
-          The watchlist couldn&apos;t be loaded. Try again shortly.
+          Couldn&apos;t load what&apos;s coming up right now. Try again shortly.
         </p>
       ) : events.length === 0 ? (
         <p className="watchlist-empty">
-          Nothing on the watchlist yet. Check back a little later.
+          Nothing coming up yet. Check back a little later.
         </p>
       ) : visibleEvents.length === 0 ? (
         <p className="watchlist-empty">Nothing at this rating right now.</p>

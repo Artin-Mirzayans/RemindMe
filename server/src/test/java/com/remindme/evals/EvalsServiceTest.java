@@ -49,8 +49,8 @@ class EvalsServiceTest {
     void aggregatesAcrossDays() {
         FeedMetricsRepository repository = mock(FeedMetricsRepository.class);
         when(repository.findRange(eq(EvalsService.DIGEST), any(), any())).thenReturn(List.of(
-                new DailyMetrics(EvalsService.DIGEST, "2030-01-09", 10, 1, 1, 0, 0, 0.05, 500, 100, 800),
-                new DailyMetrics(EvalsService.DIGEST, "2030-01-10", 6, 1, 0, 1, 0, 0.00, 300, 0, 400)));
+                new DailyMetrics(EvalsService.DIGEST, "2030-01-09", 10, 1, 1, 0, 0, 0.05, 500, 100, 800, 0),
+                new DailyMetrics(EvalsService.DIGEST, "2030-01-10", 6, 1, 0, 1, 0, 0.00, 300, 0, 400, 0)));
 
         EvalsSummary summary = serviceWith(repository).summarize(EvalsService.DIGEST, 2);
 
@@ -88,7 +88,7 @@ class EvalsServiceTest {
     void healthHidesCountsAndSpend() {
         FeedMetricsRepository repository = mock(FeedMetricsRepository.class);
         when(repository.findRange(eq(EvalsService.DIGEST), any(), any())).thenReturn(List.of(
-                new DailyMetrics(EvalsService.DIGEST, "2030-01-10", 6, 2, 1, 1, 0, 0.05, 500, 100, 1000)));
+                new DailyMetrics(EvalsService.DIGEST, "2030-01-10", 6, 2, 1, 1, 0, 0.05, 500, 100, 1000, 0)));
         when(repository.findRange(eq(EvalsService.WATCHLIST), any(), any())).thenReturn(List.of());
         when(repository.findRange(eq(EvalsService.LOCAL_EVENTS), any(), any())).thenReturn(List.of());
 
@@ -102,6 +102,39 @@ class EvalsServiceTest {
         assertThat(watchlist.avgLatencyMs()).isNull();
         assertThat(FeedHealth.class.getRecordComponents()).extracting("name")
                 .containsExactly("feature", "windowDays", "successRate", "avgLatencyMs");
+    }
+
+    @Test
+    @DisplayName("a refresh that was skipped because the source had nothing doesn't count against reliability")
+    void skippedRunsDontHurtReliability() {
+        FeedMetricsRepository repository = mock(FeedMetricsRepository.class);
+        // 4 refreshes: 2 reached the model (1 worked, 1 came back empty), 2 were skipped upstream
+        when(repository.findRange(eq(EvalsService.LOCAL_EVENTS), any(), any())).thenReturn(List.of(
+                new DailyMetrics(EvalsService.LOCAL_EVENTS, "2030-01-10", 5, 4, 1, 1, 0, 0.04, 400, 80, 3000, 2)));
+        when(repository.findRange(eq(EvalsService.DIGEST), any(), any())).thenReturn(List.of());
+        when(repository.findRange(eq(EvalsService.WATCHLIST), any(), any())).thenReturn(List.of());
+
+        EvalsSummary summary = serviceWith(repository).summarize(EvalsService.LOCAL_EVENTS, 30);
+
+        assertThat(summary.successRate()).isEqualTo(0.5);
+        assertThat(summary.avgLatencyMs()).isEqualTo(1500);
+        assertThat(summary.avgCostPerGeneration()).isEqualTo(0.02);
+    }
+
+    @Test
+    @DisplayName("a feed whose only refreshes were skipped reports no reliability yet instead of 0%")
+    void onlySkippedRunsMeansNoData() {
+        FeedMetricsRepository repository = mock(FeedMetricsRepository.class);
+        when(repository.findRange(eq(EvalsService.LOCAL_EVENTS), any(), any())).thenReturn(List.of(
+                new DailyMetrics(EvalsService.LOCAL_EVENTS, "2030-01-10", 3, 2, 0, 0, 0, 0, 0, 0, 0, 2)));
+        when(repository.findRange(eq(EvalsService.DIGEST), any(), any())).thenReturn(List.of());
+        when(repository.findRange(eq(EvalsService.WATCHLIST), any(), any())).thenReturn(List.of());
+
+        FeedHealth nearby = serviceWith(repository).health(30).stream()
+                .filter(h -> h.feature().equals(EvalsService.LOCAL_EVENTS)).findFirst().get();
+
+        assertThat(nearby.successRate()).isNull();
+        assertThat(nearby.avgLatencyMs()).isNull();
     }
 
     @Test
