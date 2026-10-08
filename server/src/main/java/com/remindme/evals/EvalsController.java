@@ -8,8 +8,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-// public and read-only - everything here is aggregate operational data (request counts,
-// success rates, cost totals), nothing user-specific, so it's fine to expose without auth
+// public on purpose, so it only ever returns rates and typical timings - the raw counts and
+// spend stay in DynamoDB and the logs
 @RestController
 @RequestMapping("/evals")
 public class EvalsController {
@@ -22,10 +22,10 @@ public class EvalsController {
         this.evalsService = evalsService;
     }
 
-    @GetMapping("/summary")
-    public ResponseEntity<List<EvalsSummary>> summary(
+    @GetMapping("/health")
+    public ResponseEntity<List<FeedHealth>> health(
             @RequestParam(name = "days", defaultValue = "30") int days) {
         int window = Math.max(1, Math.min(days, MAX_WINDOW_DAYS));
-        return ResponseEntity.ok(evalsService.summarizeAll(window));
+        return ResponseEntity.ok(evalsService.health(window));
     }
 }

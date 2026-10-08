@@ -2,22 +2,34 @@
     display: flex;
     flex-direction: row;
     align-items: center;
-    gap: var(--space-5);
+    gap: clamp(var(--space-2), 1.6vw, var(--space-5));
 
-    padding: var(--space-5) clamp(var(--space-4), 6vw, var(--space-7));
+    padding: var(--space-5) clamp(var(--space-3), 4vw, var(--space-7));
     border-bottom: 2px solid var(--color-primary);
 
     .nav-info {
         display: flex;
         align-items: center;
-        gap: var(--space-4);
+        gap: clamp(var(--space-1), 1.2vw, var(--space-4));
     }
 
     .nav-user {
         display: flex;
         align-items: center;
-        gap: var(--space-3);
+        gap: clamp(var(--space-1), 1vw, var(--space-3));
         margin-left: auto;
+    }
+
+    /* shrinks with the screen so the links can't crush it */
+    .logo {
+        flex: 0 0 auto;
+        width: clamp(7rem, 11vw, 15rem);
+        height: auto;
+    }
+
+    .logo img {
+        width: 100%;
+        height: auto;
     }
 
     .nav-link {
@@ -125,5 +137,12 @@
     .mobile-nav-icon {
         display: flex;
         color: var(--color-primary);
+    }
+}
+
+/* on mid-width screens the right-hand links drop to icons so the logo and main links fit */
+@media (max-width: 1400px) {
+    .nav .nav-link-label {
+        display: none;
     }
 }

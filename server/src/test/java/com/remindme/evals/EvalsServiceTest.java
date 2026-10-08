@@ -84,6 +84,27 @@ class EvalsServiceTest {
     }
 
     @Test
+    @DisplayName("public health carries only rates and timings, and is null for a feed that never generated")
+    void healthHidesCountsAndSpend() {
+        FeedMetricsRepository repository = mock(FeedMetricsRepository.class);
+        when(repository.findRange(eq(EvalsService.DIGEST), any(), any())).thenReturn(List.of(
+                new DailyMetrics(EvalsService.DIGEST, "2030-01-10", 6, 2, 1, 1, 0, 0.05, 500, 100, 1000)));
+        when(repository.findRange(eq(EvalsService.WATCHLIST), any(), any())).thenReturn(List.of());
+        when(repository.findRange(eq(EvalsService.LOCAL_EVENTS), any(), any())).thenReturn(List.of());
+
+        List<FeedHealth> health = serviceWith(repository).health(30);
+
+        FeedHealth digest = health.stream().filter(h -> h.feature().equals(EvalsService.DIGEST)).findFirst().get();
+        assertThat(digest.successRate()).isEqualTo(0.5);
+        assertThat(digest.avgLatencyMs()).isEqualTo(500);
+        FeedHealth watchlist = health.stream().filter(h -> h.feature().equals(EvalsService.WATCHLIST)).findFirst().get();
+        assertThat(watchlist.successRate()).isNull();
+        assertThat(watchlist.avgLatencyMs()).isNull();
+        assertThat(FeedHealth.class.getRecordComponents()).extracting("name")
+                .containsExactly("feature", "windowDays", "successRate", "avgLatencyMs");
+    }
+
+    @Test
     @DisplayName("a disabled instance never touches a repository and reports empty summaries")
     void disabledIsInert() {
         EvalsService disabled = EvalsService.disabled();

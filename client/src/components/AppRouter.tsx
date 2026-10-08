@@ -1,5 +1,5 @@
 import React from "react";
-import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
+import { BrowserRouter as Router, Navigate, Route, Routes } from "react-router-dom";
 
 import AuthCallback from "./Auth/AuthCallback";
 import ReminderContent from "./Reminder/ReminderContent";
@@ -7,7 +7,7 @@ import ProfileContent from "./Profile/ProfileContent";
 import DigestContent from "./Digest/DigestContent";
 import WatchlistContent from "./Watchlist/WatchlistContent";
 import NearbyContent from "./Nearby/NearbyContent";
-import SystemContent from "./System/SystemContent";
+import AiHealthContent from "./AiHealth/AiHealthContent";
 import MainPage from "../pages/MainPage";
 import NotFoundPage from "../pages/NotFoundPage";
 import { UserProvider } from "./Auth/UserContext";
@@ -24,7 +24,8 @@ const AppRouter = () => {
             <Route path="nearby" element={<NearbyContent />} />
             <Route path="reminders" element={<ReminderContent />} />
             <Route path="profile" element={<ProfileContent />} />
-            <Route path="system" element={<SystemContent />} />
+            <Route path="ai-health" element={<AiHealthContent />} />
+            <Route path="system" element={<Navigate to="/ai-health" replace />} />
           </Route>
           <Route path="*" element={<NotFoundPage />} />
         </Routes>

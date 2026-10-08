@@ -68,8 +68,8 @@ const MobileNav: React.FC<MobileNavProps> = ({
               <CgProfile size={32} />
             </span>
           </Link>
-          <Link to="system" className="mobile-nav-link" onClick={toggleMenu}>
-            <span className="mobile-nav-desc">System</span>
+          <Link to="ai-health" className="mobile-nav-link" onClick={toggleMenu}>
+            <span className="mobile-nav-desc">AI Health</span>
             <span className="mobile-nav-icon">
               <LuActivity size={32} />
             </span>

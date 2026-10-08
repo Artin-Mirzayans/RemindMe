@@ -57,6 +57,14 @@ public class EvalsService {
         repository.recordGeneration(feature, today(), outcome, costUsd, inputTokens, outputTokens, latencyMs);
     }
 
+    public List<FeedHealth> health(int days) {
+        return summarizeAll(days).stream()
+                .map(s -> s.totalGenerations() == 0
+                        ? new FeedHealth(s.feature(), days, null, null)
+                        : new FeedHealth(s.feature(), days, s.successRate(), s.avgLatencyMs()))
+                .toList();
+    }
+
     public List<EvalsSummary> summarizeAll(int days) {
         return FEATURES.stream().map(feature -> summarize(feature, days)).toList();
     }

@@ -42,13 +42,13 @@ const DesktopNav: React.FC<DesktopNavProps> = ({ handleLogout }) => {
         </Link>
       </div>
       <div className="nav-user">
-        <Link to="profile" className="nav-link">
+        <Link to="profile" className="nav-link" title="Profile" aria-label="Profile">
           <CgProfile size={26} />
-          <span>Profile</span>
+          <span className="nav-link-label">Profile</span>
         </Link>
-        <Link to="system" className="nav-link">
+        <Link to="ai-health" className="nav-link" title="AI Health" aria-label="AI Health">
           <LuActivity size={26} />
-          <span>System</span>
+          <span className="nav-link-label">AI Health</span>
         </Link>
         <a
           href="https://github.com/Artin-Mirzayans/RemindMe"
