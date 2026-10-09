@@ -28,6 +28,33 @@ Reminders are scheduled with EventBridge and sent by Lambda at the exact moment 
 the AI feeds are generated once, cached and shared, so they stay fast and inexpensive however many
 people use them. Logging and metrics track reliability and performance across every feature.
 
+## Preview
+
+<table>
+  <tr>
+    <td width="50%" valign="top">
+      <b>Today &amp; Tomorrow</b><br/>
+      <img src="docs/screenshots/today-and-tomorrow.png" alt="Today & Tomorrow feed" />
+    </td>
+    <td width="50%" valign="top">
+      <b>Nearby (Los Angeles)</b><br/>
+      <img src="docs/screenshots/nearby.png" alt="Nearby feed for Los Angeles" />
+    </td>
+  </tr>
+  <tr>
+    <td width="50%" valign="top">
+      <b>Planning Ahead</b><br/>
+      <img src="docs/screenshots/planning-ahead.png" alt="Planning Ahead signed-out preview" />
+    </td>
+    <td width="50%" valign="top">
+      <b>AI Health</b><br/>
+      <img src="docs/screenshots/ai-health.png" alt="AI Health status page" />
+    </td>
+  </tr>
+</table>
+
+<sub>Today &amp; Tomorrow is shown with sample data on a busy sports weekend; the other screens are live.</sub>
+
 ## Why I built it
 
 Most reminder apps assume you already know what you want to be reminded of. The more common
@@ -39,9 +66,9 @@ watching, tap "Remind me", and it's handled.
 
 ```mermaid
 graph LR
-    U["Browser<br/>React + TypeScript"] --> API["Spring Boot API<br/>AWS App Runner"]
+    U["React/TypeScript"] --> API["AWS App Runner<br/>(ECS, Fargate)"]
     API --> DB[("DynamoDB")]
-    API --> EB["EventBridge Scheduler"]
+    API --> EB["EventBridge"]
     EB --> L["Lambda: text / email"]
     API --> C["Claude"]
     D["ESPN · Tavily · Ticketmaster"] --> API
@@ -51,6 +78,6 @@ graph LR
 
 - **Frontend:** React, TypeScript
 - **Backend:** Java, Spring Boot
-- **AWS:** App Runner, DynamoDB, EventBridge Scheduler, Lambda, S3 + CloudFront, Pinpoint (SMS)
+- **AWS:** App Runner, DynamoDB, EventBridge, Lambda, S3 + CloudFront, Pinpoint (SMS)
 - **AI and data:** Claude API, Tavily, ESPN, Ticketmaster
 - **Auth and delivery:** Google OAuth, GitHub Actions CI/CD
