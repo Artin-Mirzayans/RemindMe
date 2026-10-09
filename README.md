@@ -49,8 +49,6 @@ Planning Ahead.
   </tr>
 </table>
 
-<sub>Today &amp; Tomorrow is shown with sample data on a busy sports weekend; the other screens are live.</sub>
-
 ## Why I built it
 
 Most reminder apps assume you already know what you want to be reminded of. The more common
@@ -63,22 +61,21 @@ keeps running without constant attention, stays cheap, and could grow without be
 
 ## How it's built, and why
 
-- **Reminders go off on their own.** Setting a reminder tells AWS to wake up at that exact
-  moment and send the message. Nothing has to sit there watching the clock, so it's reliable and
-  costs almost nothing while it waits.
+- **Reminders run on AWS serverless technology.** Each reminder is handed to AWS, which sends
+  the text or email at the exact moment it's due. There's no server of mine waiting around, so
+  it stays reliable, scales on its own as more reminders come in, and costs almost nothing while idle.
 - **The lists are made once and shared.** Picking what's worth watching takes an AI a little while
   and costs money each time. So each list is built once, saved, and shown to everyone until it's
   time for a fresh one. That keeps pages fast and costs small, however many people visit.
-- **Real facts first, AI second.** Schedules, matchups and ticket listings come from sources
-  like ESPN and Ticketmaster, plus web searches for things like TV and film, so the times and
-  names are real. The AI only chooses what's worth your attention and writes the short descriptions.
+- **The AI picks, real sources supply the facts.** Schedules, matchups and ticket listings come
+  from sources like ESPN and Ticketmaster, plus web searches for things like TV and film, so the
+  times and names are real. The AI chooses what's worth your attention and writes the short descriptions.
 - **Look around before signing in.** You can browse the lists without an account. Signing in is
   only needed for things that are personal, like reminders.
-- **It keeps an eye on itself.** Every time the AI runs, the app records whether it worked and
-  how long it took. A public [AI Health](https://remindme.amsksolutions.com/ai-health) page shows
-  how that's going.
-- **Hosted on services AWS runs.** There's no server to look after by hand, and a code change
-  goes live automatically after it passes its checks.
+- **Using AI, and measuring it.** Every time the AI runs, the app logs whether it worked, how
+  long it took and an estimate of what it cost. That keeps both its effectiveness and its spending
+  tracked, and a public [AI Health](https://remindme.amsksolutions.com/ai-health) page shows how
+  it's holding up.
 
 ## Architecture
 
