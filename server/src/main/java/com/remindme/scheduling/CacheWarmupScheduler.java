@@ -25,6 +25,8 @@ public class CacheWarmupScheduler {
     public void warmCaches() {
         log.info("Warming digest and watchlist caches");
         digestService.today();
-        watchlistService.current();
+        // true so it refreshes once the 3 day cooldown is up instead of serving the old feed
+        // until someone presses Refresh - inside the cooldown it's a no-op
+        watchlistService.current(true);
     }
 }

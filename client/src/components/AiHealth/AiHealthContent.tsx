@@ -9,7 +9,7 @@ import "./AiHealthContent.css";
 const FEATURES = [
   { key: "Digest", label: "Today & Tomorrow", cadence: "Updates every day" },
   { key: "Watchlist", label: "Planning Ahead", cadence: "Updates every few days" },
-  { key: "LocalEvents", label: "Nearby", cadence: "Updates every few days for each area" },
+  { key: "LocalEvents", label: "Nearby", cadence: "Updated as each area is used" },
 ];
 
 const HEALTHY_AT = 0.8;

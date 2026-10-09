@@ -26,7 +26,7 @@ class CacheWarmupSchedulerTest {
         new CacheWarmupScheduler(digest, watchlist).warmCaches();
 
         verify(digest).today();
-        verify(watchlist).current();
+        verify(watchlist).current(true);
         verifyNoMoreInteractions(digest, watchlist);
     }
 
