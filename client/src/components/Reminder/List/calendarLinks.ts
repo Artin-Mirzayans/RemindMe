@@ -34,7 +34,7 @@ const escapeIcsText = (text: string): string =>
 export const buildIcsFile = (reminder: ReminderProps): string => {
     const start = new Date(reminder.dateTime);
     const end = addMinutes(start, DEFAULT_DURATION_MINUTES);
-    const uid = `${reminder.contactMethod}-${reminder.dateTime}@remindme.amsksolutions.com`;
+    const uid = `${reminder.contactMethod}-${reminder.dateTime}@remindme.artinmirzayans.com`;
 
     // RFC 5545 wants CRLF line endings
     return [

@@ -9,6 +9,9 @@ module.exports = (env, argv) => {
 
     return {
         mode: isProduction ? 'production' : 'development',
+        // no source maps in the production bundle - they'd publish the original component
+        // tree. 'eval' is what webpack already defaults to in development.
+        devtool: isProduction ? false : 'eval',
         entry: './src/index.js',
         resolve: {
             extensions: ['.ts', '.tsx', '.js'],

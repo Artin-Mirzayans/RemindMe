@@ -95,4 +95,8 @@ jobs:
         run: |
           # index.html/favicon.ico aren't content-hashed, so CloudFront needs telling that a
           # deploy happened rather than waiting for its own cache to expire on its own
-          aws cloudfront create-invalidation --distribution-id E1LXFFBDIRVSJP --paths "/*"
+          # both distributions serve the same bucket (E1LXFFBDIRVSJP = amsksolutions,
+          # E3FH0YQ4X4L39D = artinmirzayans), so a deploy has to invalidate both
+          for dist in E1LXFFBDIRVSJP E3FH0YQ4X4L39D; do
+            aws cloudfront create-invalidation --distribution-id "$dist" --paths "/*"
+          done

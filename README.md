@@ -7,7 +7,7 @@
 [![React CI/CD](https://github.com/Artin-Mirzayans/RemindMe/actions/workflows/react.yml/badge.svg)](https://github.com/Artin-Mirzayans/RemindMe/actions/workflows/react.yml)
 [![Spring CI/CD](https://github.com/Artin-Mirzayans/RemindMe/actions/workflows/spring.yml/badge.svg)](https://github.com/Artin-Mirzayans/RemindMe/actions/workflows/spring.yml)
 
-**[remindme.amsksolutions.com](https://remindme.amsksolutions.com)**
+**[remindme.artinmirzayans.com](https://remindme.artinmirzayans.com)**
 
 </div>
 
@@ -74,7 +74,7 @@ keeps running without constant attention, stays cheap, and could grow without be
   only needed for things that are personal, like reminders.
 - **Using AI, and measuring it.** Every time the AI runs, the app logs whether it worked, how
   long it took and an estimate of what it cost. That keeps both its effectiveness and its spending
-  tracked, and a public [AI Health](https://remindme.amsksolutions.com/ai-health) page shows how
+  tracked, and a public [AI Health](https://remindme.artinmirzayans.com/ai-health) page shows how
   it's holding up.
 
 ## Architecture
