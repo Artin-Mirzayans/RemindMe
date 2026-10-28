@@ -1,7 +1,9 @@
 import { clearAuthTokens, refreshAccessToken, validateAccessToken, fetchUserData } from "./authUtils";
 
 const CLIENT_ID = "344473433718-a1vsjaaules6d3i934gmnbjs72nep4va.apps.googleusercontent.com";
-const REDIRECT_URI = process.env.OAUTH_REDIRECT_URI;
+// both CloudFront distributions serve this same bundle, so the redirect URI has to come
+// from the origin it was actually served from rather than being baked in at build time
+const REDIRECT_URI = `${window.location.origin}/oauth2/callback`;
 const authUrl = `https://accounts.google.com/o/oauth2/v2/auth?client_id=${CLIENT_ID}&redirect_uri=${REDIRECT_URI}&response_type=code&scope=email&access_type=offline&prompt=consent`;
 
 // eslint-disable-next-line @typescript-eslint/no-unsafe-function-type

@@ -17,11 +17,18 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.client.RestTemplate;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 @RestController
 public class AuthController {
+
+    private static final Logger log = LoggerFactory.getLogger(AuthController.class);
+
+    private static final String CALLBACK_PATH = "/oauth2/callback";
 
     String url = "https://oauth2.googleapis.com/token";
 
@@ -34,8 +41,12 @@ public class AuthController {
     @Value("${oauth.redirect_uri}")
     private String redirectUri;
 
+    @Value("${cors.allowed_origins}")
+    private String[] allowedOrigins;
+
     @PostMapping("/oauth2callback")
-    public ResponseEntity<Map<String, String>> exchangeCode(@RequestParam("code") String authorizationCode) {
+    public ResponseEntity<Map<String, String>> exchangeCode(@RequestParam("code") String authorizationCode,
+            @RequestParam(value = "redirect_uri", required = false) String requestedRedirectUri) {
 
         HttpHeaders headers = new HttpHeaders();
         headers.setBasicAuth(clientId, clientSecret);
@@ -44,7 +55,7 @@ public class AuthController {
         MultiValueMap<String, String> body = new LinkedMultiValueMap<>();
         body.add("code", authorizationCode);
         body.add("grant_type", "authorization_code");
-        body.add("redirect_uri", redirectUri);
+        body.add("redirect_uri", resolveRedirectUri(requestedRedirectUri));
 
         HttpEntity<MultiValueMap<String, String>> requestEntity = new HttpEntity<>(body, headers);
 
@@ -59,6 +70,23 @@ public class AuthController {
         tokens.put("refreshToken", refreshToken);
 
         return ResponseEntity.ok(tokens);
+    }
+
+    // Google requires the redirect_uri on the token exchange to be byte-identical to the one
+    // the authorization request used. Both frontend hostnames serve the same bundle, so the
+    // client sends the origin it was served from; anything we don't recognise falls back to the
+    // configured value rather than being forwarded to Google unchecked.
+    private String resolveRedirectUri(String requested) {
+        if (requested == null || requested.isBlank()) {
+            return redirectUri;
+        }
+        for (String origin : allowedOrigins) {
+            if (requested.equals(origin.trim() + CALLBACK_PATH)) {
+                return requested;
+            }
+        }
+        log.warn("Ignoring unrecognised redirect_uri on token exchange, using the configured one");
+        return redirectUri;
     }
 
     @PostMapping("/refresh-token")

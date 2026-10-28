@@ -28,7 +28,12 @@ const AuthCallback: React.FC = () => {
             `${process.env.SERVER_API_URL}/oauth2callback`,
             null,
             {
-              params: { code: authorizationCode },
+              // Google checks the redirect_uri on the token exchange against the one the
+              // authorization request used, so the backend needs ours, not its own default
+              params: {
+                code: authorizationCode,
+                redirect_uri: `${window.location.origin}/oauth2/callback`,
+              },
               headers: {
                 "Content-Type": "application/x-www-form-urlencoded",
               },
