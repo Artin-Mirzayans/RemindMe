@@ -49,17 +49,17 @@ curl -s https://<service-url>.us-west-2.awsapprunner.com/digest | head -c 300
 ```bash
 aws apprunner associate-custom-domain --region us-west-2 \
   --service-arn <service-arn> \
-  --domain-name api.remindme.amsksolutions.com
+  --domain-name api.remindme.artinmirzayans.com
 ```
 
 This returns certificate-validation CNAME records and the target to point the domain at. In
-Route53 (zone `amsksolutions.com`, `Z090961133I6RP4C2ZEEJ`):
+Route53 (zone `artinmirzayans.com`, `Z05011453Q24CJO97H5MD`):
 
-- remove the existing `api.remindme.amsksolutions.com` A-ALIAS record (currently pointed at the ALB)
+- remove the existing `api.remindme.artinmirzayans.com` A-ALIAS record (currently pointed at the ALB)
 - add the CNAME(s) `associate-custom-domain` printed (validation + the service's default domain)
 
 Wait for `aws apprunner describe-custom-domains` to report the certificate as `ACTIVE`, then
-confirm `https://api.remindme.amsksolutions.com/actuator/health` and load the actual site.
+confirm `https://api.remindme.artinmirzayans.com/actuator/health` and load the actual site.
 
 ### 4. Decommission EC2 (after a clean day or two - also needs your go-ahead)
 
